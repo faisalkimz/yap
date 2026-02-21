@@ -52,7 +52,7 @@ export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
     const handlePayment = () => {
         setPaymentModalVisible(false);
-        navigation.replace('OrderSuccess');
+        navigation.replace('PaymentGateway');
     };
 
     return (

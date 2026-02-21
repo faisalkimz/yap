@@ -257,6 +257,17 @@ const styles = StyleSheet.create({
         fontWeight: '800',
         letterSpacing: 0.5,
     },
+    guestButton: {
+        height: 64,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 12,
+    },
+    guestButtonText: {
+        color: '#8E8E93',
+        fontSize: 15,
+        fontWeight: '700',
+    },
     divider: {
         flexDirection: 'row',
         alignItems: 'center',

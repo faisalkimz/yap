@@ -19,7 +19,8 @@ import {
   PaymentMethodsScreen,
   AddressScreen,
   SettingsScreen,
-  SupportScreen
+  SupportScreen,
+  ChangePasswordScreen
 } from '../screens/ProfileSections';
 import { ShopScreen } from '../screens/ShopScreen';
 import { CategoryListingScreen } from '../screens/CategoryListingScreen';
@@ -27,6 +28,13 @@ import { SubCategoryScreen } from '../screens/SubCategoryScreen';
 import { BrandScreen } from '../screens/BrandScreen';
 import { SearchResultsScreen } from '../screens/SearchResultsScreen';
 import { FiltersScreen } from '../screens/FiltersScreen';
+import { OrderDetailScreen } from '../screens/OrderDetailScreen';
+import { AddEditAddressScreen } from '../screens/AddEditAddressScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { WalletScreen } from '../screens/WalletScreen';
+import { ShoppingExtrasScreen } from '../screens/ShoppingExtrasScreen';
+import { PaymentFailedScreen } from '../screens/PaymentFailedScreen';
+import { PaymentGatewayScreen } from '../screens/PaymentGatewayScreen';
 
 // Auth Screens
 import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
@@ -60,6 +68,7 @@ export type RootStackParamList = {
   Address: undefined;
   Settings: undefined;
   Support: undefined;
+  ChangePassword: undefined;
   Shop: undefined;
   CategoryListing: undefined;
   SubCategory: { categoryId: string, categoryName: string };
@@ -72,6 +81,13 @@ export type RootStackParamList = {
   ResetPassword: undefined;
   SocialLoginCallback: undefined;
   LogoutConfirmation: undefined;
+  OrderDetails: undefined;
+  AddEditAddress: undefined;
+  Notifications: undefined;
+  Wallet: undefined;
+  ShoppingExtras: { initialTab?: string };
+  PaymentFailed: undefined;
+  PaymentGateway: undefined;
 };
 
 
@@ -107,6 +123,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Address" component={AddressScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
 
         {/* Store & Products */}
         <Stack.Screen name="Shop" component={ShopScreen} />
@@ -115,6 +132,15 @@ export const AppNavigator = () => {
         <Stack.Screen name="Brand" component={BrandScreen} />
         <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
         <Stack.Screen name="Filters" component={FiltersScreen} />
+
+        {/* Missing Account & Shopping Screens */}
+        <Stack.Screen name="OrderDetails" component={OrderDetailScreen} />
+        <Stack.Screen name="AddEditAddress" component={AddEditAddressScreen} />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
+        <Stack.Screen name="Wallet" component={WalletScreen} />
+        <Stack.Screen name="ShoppingExtras" component={ShoppingExtrasScreen} />
+        <Stack.Screen name="PaymentFailed" component={PaymentFailedScreen} />
+        <Stack.Screen name="PaymentGateway" component={PaymentGatewayScreen} />
 
         {/* Auth Workflows */}
         <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />
