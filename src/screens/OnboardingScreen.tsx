@@ -162,7 +162,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
               if (currentIndex < SLIDES.length - 1) {
                 flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
               } else {
-                navigation.navigate('GetStarted');
+                navigation.replace('Home');
               }
             }}
             style={styles.button}
@@ -214,17 +214,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '100%',
     backgroundColor: colors.white,
-    borderTopLeftRadius: 40,
-    borderTopRightRadius: 40,
-    paddingHorizontal: 30,
-    paddingTop: 32,
-    paddingBottom: 50,
+    borderTopLeftRadius: 48,
+    borderTopRightRadius: 48,
+    paddingHorizontal: 32,
+    paddingTop: 36,
+    paddingBottom: 54,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -15 },
-    shadowOpacity: 0.15,
-    shadowRadius: 15,
-    elevation: 24,
+    shadowOffset: { width: 0, height: -20 },
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    elevation: 30,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -267,14 +269,14 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     width: '100%',
     shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
   },
   button: {
-    borderRadius: 20,
-    height: 60,
+    borderRadius: 30,
+    height: 62,
   },
   footer: {
     flexDirection: 'row',

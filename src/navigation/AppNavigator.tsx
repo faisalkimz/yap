@@ -13,6 +13,7 @@ import { CheckoutScreen } from '../screens/CheckoutScreen';
 import { OrderSuccessScreen } from '../screens/OrderSuccessScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { OrdersScreen } from '../screens/OrdersScreen';
+import { OrderTrackingScreen } from '../screens/OrderTrackingScreen';
 import {
   EditProfileScreen,
   PaymentMethodsScreen,
@@ -38,6 +39,7 @@ export type RootStackParamList = {
   Profile: undefined;
   Checkout: { total: string };
   OrderSuccess: undefined;
+  OrderTracking: undefined;
   EditProfile: undefined;
   Orders: undefined;
   PaymentMethods: undefined;
@@ -57,7 +59,6 @@ export const AppNavigator = () => {
         initialRouteName="Splash"
         screenOptions={{
           headerShown: false,
-          animation: 'fade_from_bottom',
         }}
       >
         <Stack.Screen name="Splash" component={SplashScreen} />
@@ -71,6 +72,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Checkout" component={CheckoutScreen} />
         <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+        <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
 
         {/* Profile Sections */}
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />

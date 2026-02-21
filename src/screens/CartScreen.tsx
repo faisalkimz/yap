@@ -344,11 +344,16 @@ const styles = StyleSheet.create({
     },
     checkoutButton: {
         backgroundColor: colors.primary,
-        height: 56,
-        borderRadius: 28,
+        height: 58,
+        borderRadius: 30,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.4,
+        shadowRadius: 16,
+        elevation: 12,
     },
     checkoutButtonText: {
         color: colors.white,

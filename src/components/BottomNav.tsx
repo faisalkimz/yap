@@ -1,11 +1,9 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
 import { colors } from '../theme/colors';
-import House from 'lucide-react-native/dist/esm/icons/house';
-import ShoppingBag from 'lucide-react-native/dist/esm/icons/shopping-bag';
-import Heart from 'lucide-react-native/dist/esm/icons/heart';
-import User from 'lucide-react-native/dist/esm/icons/user';
+import { House, ShoppingBag, Heart, User, Package } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
@@ -16,21 +14,69 @@ type NavItemProps = {
     onPress: () => void;
 };
 
-const NavItem = ({ icon: Icon, isActive, onPress }: NavItemProps) => (
-    <TouchableOpacity style={styles.navItem} onPress={onPress} activeOpacity={0.7}>
-        <Icon
-            size={24}
-            color={isActive ? colors.primary : '#C0C0C0'}
-            strokeWidth={isActive ? 2.5 : 2}
-        />
-        {isActive && <View style={styles.activeNavDot} />}
-    </TouchableOpacity>
-);
+const NavItem = ({ icon: Icon, isActive, onPress }: NavItemProps) => {
+    const scaleAnim = React.useRef(new Animated.Value(1)).current;
+
+    React.useEffect(() => {
+        if (isActive) {
+            Animated.spring(scaleAnim, {
+                toValue: 1.1,
+                tension: 300,
+                friction: 10,
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                tension: 300,
+                friction: 10,
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [isActive]);
+
+    return (
+        <TouchableOpacity 
+            style={styles.navItem} 
+            onPress={onPress} 
+            activeOpacity={0.7}
+        >
+            {isActive ? (
+                <LinearGradient
+                    colors={[colors.primary, '#FF6B4A']}
+                    style={styles.activeIconContainer}
+                >
+                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                        <Icon
+                            size={22}
+                            color={colors.white}
+                            strokeWidth={2.5}
+                        />
+                    </Animated.View>
+                </LinearGradient>
+            ) : (
+                <Icon
+                    size={22}
+                    color="#9CA3AF"
+                    strokeWidth={2}
+                />
+            )}
+            {isActive && (
+                <View style={styles.activeIndicator}>
+                    <View style={styles.activeNavDot} />
+                </View>
+            )}
+        </TouchableOpacity>
+    );
+};
 
 export const BottomNav = () => {
     const navigation = useNavigation<any>();
     const route = useRoute();
     const currentRoute = route.name;
+
+    // Check if current route is an order-related screen
+    const isOrderScreen = currentRoute === 'OrderTracking' || currentRoute === 'Orders' || currentRoute === 'OrderSuccess';
 
     return (
         <View style={styles.container}>
@@ -46,6 +92,12 @@ export const BottomNav = () => {
                     routeName="Cart"
                     isActive={currentRoute === 'Cart'}
                     onPress={() => navigation.navigate('Cart')}
+                />
+                <NavItem
+                    icon={Package}
+                    routeName="Orders"
+                    isActive={isOrderScreen}
+                    onPress={() => navigation.navigate('OrderTracking')}
                 />
                 <NavItem
                     icon={Heart}
@@ -72,32 +124,50 @@ const styles = StyleSheet.create({
         right: 0,
         backgroundColor: '#FFFFFF',
         borderTopWidth: 1,
-        borderTopColor: '#F5F5F5',
+        borderTopColor: '#F0F0F0',
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 10,
-        height: 90,
+        shadowOffset: { width: 0, height: -8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 20,
+        elevation: 16,
+        height: 88,
+        borderTopLeftRadius: 24,
+        borderTopRightRadius: 24,
     },
     content: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        paddingTop: 15,
-        paddingHorizontal: 10,
+        paddingTop: 12,
+        paddingBottom: 8,
+        paddingHorizontal: 4,
     },
     navItem: {
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 12,
-        width: 60,
+        padding: 8,
+        width: 68,
+        position: 'relative',
+    },
+    activeIconContainer: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    activeIndicator: {
+        marginTop: 4,
     },
     activeNavDot: {
-        width: 5,
-        height: 5,
-        borderRadius: 2.5,
+        width: 6,
+        height: 6,
+        borderRadius: 3,
         backgroundColor: colors.primary,
-        marginTop: 6,
     },
 });

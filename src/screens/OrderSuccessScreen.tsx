@@ -37,7 +37,7 @@ export const OrderSuccessScreen: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.trackButton}
-                            onPress={() => navigation.navigate('Orders')}
+                            onPress={() => navigation.navigate('OrderTracking')}
                         >
                             <Text style={styles.trackButtonText}>Track Now</Text>
                         </TouchableOpacity>
