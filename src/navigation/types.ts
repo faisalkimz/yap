@@ -52,4 +52,5 @@ export type RootStackParamList = {
     Invoice: undefined;
     MyReviews: undefined;
     Coupons: undefined;
+    Inbox: undefined;
 };

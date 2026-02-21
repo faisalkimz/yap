@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { colors } from '../theme/colors';
 import {
     ChevronLeft,
     ChevronRight,
@@ -78,17 +79,17 @@ export const SupportHubScreen: React.FC<Props> = ({ navigation }) => {
                             </View>
                             <Text style={styles.contactLabel}>LIVE CHAT</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.contactCard} onPress={() => navigation.navigate('ContactUs')}>
-                            <View style={[styles.contactIcon, { backgroundColor: '#F5F5F5' }]}>
-                                <Mail size={24} color="#1C1C1E" strokeWidth={1.5} />
+                        <TouchableOpacity style={styles.contactCard}>
+                            <View style={[styles.contactIcon, { backgroundColor: '#25D366' }]}>
+                                <Phone size={24} color="#FFFFFF" strokeWidth={1.5} />
                             </View>
-                            <Text style={styles.contactLabel}>EMAIL</Text>
+                            <Text style={styles.contactLabel}>WHATSAPP</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.contactCard} onPress={() => navigation.navigate('ContactUs')}>
-                            <View style={[styles.contactIcon, { backgroundColor: '#F5F5F5' }]}>
-                                <Phone size={24} color="#1C1C1E" strokeWidth={1.5} />
+                        <TouchableOpacity style={styles.contactCard} onPress={() => navigation.navigate('Inbox')}>
+                            <View style={[styles.contactIcon, { backgroundColor: colors.lightGray }]}>
+                                <Mail size={24} color={colors.secondary} strokeWidth={1.5} />
                             </View>
-                            <Text style={styles.contactLabel}>DIRECT CALL</Text>
+                            <Text style={styles.contactLabel}>INBOX</Text>
                         </TouchableOpacity>
                     </View>
 

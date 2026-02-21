@@ -180,6 +180,26 @@ export const ProductDetailsScreen: React.FC<Props> = ({ navigation, route }) => 
                         </ScrollView>
                     </View>
 
+                    {/* Reviews Summary */}
+                    <View style={styles.reviewsSummary}>
+                        <View style={styles.reviewsHeader}>
+                            <Text style={styles.selectionLabel}>GUEST FEEDBACK</Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('ProductReviews')}>
+                                <Text style={styles.seeAll}>VIEW ALL</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.reviewSnippet}>
+                            <View style={styles.snippetTop}>
+                                <Text style={styles.snippetUser}>Alicia V.</Text>
+                                <View style={styles.ratingBox}>
+                                    <Star size={12} color="#FFCC00" fill="#FFCC00" />
+                                    <Text style={styles.ratingText}>5.0</Text>
+                                </View>
+                            </View>
+                            <Text style={styles.snippetText}>"The quality of the silk is unprecedented. It drapes beautifully and feels like a second skin. Worth every penny for the archive collection."</Text>
+                        </View>
+                    </View>
+
                     {/* Recently Viewed */}
                     {recentlyViewed.length > 1 && (
                         <View style={styles.recentSection}>
@@ -268,6 +288,13 @@ const styles = StyleSheet.create({
     recentName: { fontSize: 13, fontWeight: '700', color: colors.secondary, marginBottom: 4 },
     recentPrice: { fontSize: 13, fontWeight: '900', color: colors.secondary },
     recommendSection: { marginTop: 60, marginBottom: 20 },
+    reviewsSummary: { marginTop: 40, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 40 },
+    reviewsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 },
+    seeAll: { fontSize: 10, fontWeight: '900', color: colors.muted, letterSpacing: 1 },
+    reviewSnippet: { backgroundColor: colors.lightGray, padding: 20, borderRadius: 2 },
+    snippetTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+    snippetUser: { fontSize: 13, fontWeight: '800', color: colors.secondary },
+    snippetText: { fontSize: 14, color: '#666', lineHeight: 22, fontStyle: 'italic' },
 });
 
 const RECENTLY_VIEWED_FALLBACK = [

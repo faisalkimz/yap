@@ -36,6 +36,7 @@ import {
     EyeOff,
     Check
 } from 'lucide-react-native';
+import { colors } from '../theme/colors';
 
 const { width } = Dimensions.get('window');
 
@@ -229,6 +230,17 @@ export const SettingsScreen = ({ navigation }: any) => {
             <SettingItem icon={Lock} label="Change Password" />
             <SettingItem icon={Shield} label="Privacy Policy" />
             <SettingItem icon={FileText} label="Terms of Service" />
+
+            <Text style={[styles.sectionTitle, { marginTop: 32, color: colors.accent }]}>Danger Zone</Text>
+            <TouchableOpacity style={[styles.settingRow, { backgroundColor: '#FFF5F2' }]}>
+                <View style={styles.settingLeft}>
+                    <View style={[styles.settingIcon, { backgroundColor: colors.white }]}>
+                        <Trash2 size={20} color={colors.accent} />
+                    </View>
+                    <Text style={[styles.settingLabel, { color: colors.accent }]}>Close Account</Text>
+                </View>
+                <ChevronRight size={20} color={colors.accent} />
+            </TouchableOpacity>
         </SectionLayout>
     );
 };

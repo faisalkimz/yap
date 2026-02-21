@@ -87,6 +87,23 @@ const FEATURED_PRODUCTS = [
     }
 ];
 
+const DEALS_PRODUCTS = [
+    { id: 'd1', name: 'Silk Pocket Square', price: '£45.00', image: 'https://images.unsplash.com/photo-1589131669922-094186541f6c?w=400&q=80' },
+    { id: 'd2', name: 'Cashmere Beanie', price: '£85.00', image: 'https://images.unsplash.com/photo-1543062229-3300bfd03611?w=400&q=80' },
+    { id: 'd3', name: 'Leather Belt', price: '£120.00', image: 'https://images.unsplash.com/photo-1554992259-ce0435166f27?w=400&q=80' },
+];
+
+const CURATED_PRODUCTS = [
+    { id: 'c1', name: 'Alabaster Silk Dress', price: '£890.00', rating: '5.0', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=80', category: 'Evening' },
+    { id: 'c2', name: 'Ivory Tailored Trousers', price: '£450.00', rating: '4.8', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&q=80', category: 'Business' },
+];
+
+const MUST_HAVES = [
+    { id: 'm1', name: 'Gold Signet Ring', price: '£1,200.00', image: 'https://images.unsplash.com/photo-1622398476015-514e24ef98a1?w=400&q=80' },
+    { id: 'm2', name: 'Linen Overshirt', price: '£180.00', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80' },
+    { id: 'm3', name: 'Leather Portfolio', price: '£350.00', image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80' },
+];
+
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const { isFavorite, toggleFavorite } = useFavorites();
     const { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed } = useCart();
@@ -258,6 +275,40 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         {FEATURED_PRODUCTS.map((p, idx) => renderProduct(p, idx))}
                     </View>
 
+                    {/* Deals for You */}
+                    <View style={[styles.sectionHeader, { marginTop: 40 }]}>
+                        <View style={styles.titleRow}>
+                            <Flame size={18} color={colors.accent} fill={colors.accent} />
+                            <Text style={styles.sectionTitle}>FLASH DEALS</Text>
+                        </View>
+                        <Text style={styles.dealTimer}>ENDS IN 04:22:10</Text>
+                    </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recentScroll}>
+                        {DEALS_PRODUCTS.map(renderRecentItem)}
+                    </ScrollView>
+
+                    {/* Curated for You */}
+                    <View style={[styles.sectionHeader, { marginTop: 50 }]}>
+                        <View style={styles.titleRow}>
+                            <Crown size={18} color="#FFD700" fill="#FFD700" />
+                            <Text style={styles.sectionTitle}>CURATED FOR YOU</Text>
+                        </View>
+                    </View>
+                    <View style={styles.curatedGrid}>
+                        {CURATED_PRODUCTS.map((p, idx) => renderProduct(p, idx))}
+                    </View>
+
+                    {/* Must Haves */}
+                    <View style={[styles.sectionHeader, { marginTop: 50 }]}>
+                        <View style={styles.titleRow}>
+                            <Heart size={18} color={colors.accent} fill={colors.accent} />
+                            <Text style={styles.sectionTitle}>THE MUST-HAVES</Text>
+                        </View>
+                    </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recentScroll}>
+                        {MUST_HAVES.map(renderRecentItem)}
+                    </ScrollView>
+
                     {recentlyViewed.length > 0 && (
                         <View style={styles.recentSection}>
                             <View style={styles.sectionHeader}>
@@ -343,5 +394,7 @@ const styles = StyleSheet.create({
     recentItem: { width: 140, marginBottom: 20 },
     recentImg: { width: 140, height: 180, borderRadius: 2, backgroundColor: colors.lightGray, marginBottom: 12 },
     recentName: { fontSize: 13, fontWeight: '700', color: colors.secondary, marginBottom: 4 },
-    recentPrice: { fontSize: 13, fontWeight: '900', color: colors.secondary }
+    recentPrice: { fontSize: 13, fontWeight: '900', color: colors.secondary },
+    dealTimer: { fontSize: 10, fontWeight: '900', color: colors.accent, letterSpacing: 1 },
+    curatedGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 20 },
 });

@@ -49,6 +49,7 @@ import { ReturnsDashboardScreen } from '../screens/ReturnsDashboardScreen';
 import { InvoiceScreen } from '../screens/InvoiceScreen';
 import { MyReviewsScreen } from '../screens/MyReviewsScreen';
 import { CouponsScreen } from '../screens/CouponsScreen';
+import { InboxScreen } from '../screens/InboxScreen';
 
 // Auth Screens
 import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
@@ -132,6 +133,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Invoice" component={InvoiceScreen} />
         <Stack.Screen name="MyReviews" component={MyReviewsScreen} />
         <Stack.Screen name="Coupons" component={CouponsScreen} />
+        <Stack.Screen name="Inbox" component={InboxScreen} />
 
         {/* Auth Workflows */}
         <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />
