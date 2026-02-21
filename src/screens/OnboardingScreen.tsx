@@ -10,13 +10,10 @@ import {
   StatusBar,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
-import { spacing } from '../theme/spacing';
-import { PrimaryButton } from '../components/PrimaryButton';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
@@ -34,9 +31,9 @@ interface OnboardingSlide {
 const SLIDES: OnboardingSlide[] = [
   {
     id: '1',
-    title: 'Curated ',
-    highlight: 'Fashion',
-    description: 'Browse styles shaped around your comfort, and personality, and discover clothing that feels right.',
+    title: 'Discover Pure ',
+    highlight: 'Aura',
+    description: 'Immerse yourself in a world of high-end fashion curated for those who seek the extraordinary.',
     images: [
       'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80',
       'https://images.unsplash.com/photo-1539109132381-31a15b2c6a4a?w=400&q=80',
@@ -48,9 +45,9 @@ const SLIDES: OnboardingSlide[] = [
   },
   {
     id: '2',
-    title: 'Modern ',
-    highlight: 'Elegance',
-    description: 'Experience a new standard of quality with pieces designed to stand the test of time and trend.',
+    title: 'Elegance Redefined ',
+    highlight: 'Classic',
+    description: 'Pieces that transcend seasons. Minimalist ethics meets maximalist luxury in every stitch.',
     images: [
       'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80',
       'https://images.unsplash.com/photo-1539109132381-31a15b2c6a4a?w=400&q=80',
@@ -62,9 +59,9 @@ const SLIDES: OnboardingSlide[] = [
   },
   {
     id: '3',
-    title: 'Global ',
-    highlight: 'Trends',
-    description: 'Connect with a community of trendsetters and get ahead with the latest global street styles.',
+    title: 'Stay Ahead of ',
+    highlight: 'Flow',
+    description: 'Bespoke collections from the world’s elite boutiques. exclusive access to global trends.',
     images: [
       'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&q=80',
       'https://images.unsplash.com/photo-1529139513055-07f9127e69c1?w=400&q=80',
@@ -93,16 +90,16 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.imageGridContainer}>
         <View style={styles.column}>
           <Image source={{ uri: item.images[0] }} style={[styles.image, { height: height * 0.28 }]} />
-          <Image source={{ uri: item.images[3] }} style={[styles.image, { height: height * 0.22, marginTop: spacing.md }]} />
+          <Image source={{ uri: item.images[3] }} style={[styles.image, { height: height * 0.22, marginTop: 12 }]} />
         </View>
         <View style={styles.column}>
           <Image source={{ uri: item.images[1] }} style={[styles.image, { height: height * 0.20 }]} />
-          <Image source={{ uri: item.images[4] }} style={[styles.image, { height: height * 0.26, marginTop: spacing.md }]} />
-          <Image source={{ uri: item.images[2] }} style={[styles.image, { height: height * 0.18, marginTop: spacing.md }]} />
+          <Image source={{ uri: item.images[4] }} style={[styles.image, { height: height * 0.26, marginTop: 12 }]} />
+          <Image source={{ uri: item.images[2] }} style={[styles.image, { height: height * 0.18, marginTop: 12 }]} />
         </View>
         <View style={styles.column}>
           <Image source={{ uri: item.images[5] }} style={[styles.image, { height: height * 0.24 }]} />
-          <Image source={{ uri: item.images[0] }} style={[styles.image, { height: height * 0.26, marginTop: spacing.md }]} />
+          <Image source={{ uri: item.images[1] }} style={[styles.image, { height: height * 0.26, marginTop: 12 }]} />
         </View>
       </View>
     </View>
@@ -110,7 +107,7 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor="#000" translucent />
 
       <FlatList
         ref={flatListRef}
@@ -126,11 +123,12 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
       />
 
       <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.8)', colors.white]}
+        colors={['transparent', 'rgba(0,0,0,0.9)', '#000000']}
         style={styles.fadeOverlay}
+        pointerEvents="none"
       />
 
-      <View style={styles.card}>
+      <View style={styles.bottomSection}>
         <View style={styles.paginationContainer}>
           {SLIDES.map((_, index) => (
             <View
@@ -143,34 +141,40 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
           ))}
         </View>
 
-        <Text style={styles.title}>
-          {SLIDES[currentIndex].title}
-          <Text style={styles.highlight}>{SLIDES[currentIndex].highlight}</Text>
-          {currentIndex === 0 ? ' Designed Around Your Taste' : ''}
-          {currentIndex === 1 ? ' For The Modern Individual' : ''}
-          {currentIndex === 2 ? ' From Across The World' : ''}
-        </Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>
+            {SLIDES[currentIndex].title}
+            <Text style={styles.highlight}>{SLIDES[currentIndex].highlight}</Text>
+          </Text>
 
-        <Text style={styles.description}>
-          {SLIDES[currentIndex].description}
-        </Text>
-
-        <View style={styles.buttonWrapper}>
-          <PrimaryButton
-            label={currentIndex === SLIDES.length - 1 ? "Get Started" : "Next"}
-            onPress={() => {
-              if (currentIndex < SLIDES.length - 1) {
-                flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
-              } else {
-                navigation.replace('Home');
-              }
-            }}
-            style={styles.button}
-          />
+          <Text style={styles.description}>
+            {SLIDES[currentIndex].description}
+          </Text>
         </View>
 
+        <TouchableOpacity
+          style={styles.mainButton}
+          onPress={() => {
+            if (currentIndex < SLIDES.length - 1) {
+              flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
+            } else {
+              navigation.replace('Home');
+            }
+          }}
+          activeOpacity={0.9}
+        >
+          <LinearGradient
+            colors={['#1C1C1E', '#2C2C2E']}
+            style={styles.btnGradient}
+          >
+            <Text style={styles.mainButtonText}>
+              {currentIndex === SLIDES.length - 1 ? "Get Started" : "Next Step"}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Already have an account? </Text>
+          <Text style={styles.footerText}>Found your way back? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
             <Text style={styles.loginLink}>Log In</Text>
           </TouchableOpacity>
@@ -183,100 +187,104 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#000000',
   },
   slide: {
     width: width,
-    paddingTop: 60,
+    paddingTop: Platform.OS === 'ios' ? 80 : 60,
   },
   imageGridContainer: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: 8,
     justifyContent: 'space-between',
   },
   column: {
-    width: (width - spacing.sm * 4) / 3,
+    width: (width - 32) / 3,
     flexDirection: 'column',
   },
   image: {
     width: '100%',
-    borderRadius: 20,
-    backgroundColor: '#1A1A1A',
+    borderRadius: 24,
+    backgroundColor: '#0A0A0A',
   },
   fadeOverlay: {
     position: 'absolute',
-    bottom: height * 0.35,
+    bottom: 0,
     width: '100%',
-    height: 100,
+    height: height * 0.6,
   },
-  card: {
+  bottomSection: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 48,
-    borderTopRightRadius: 48,
-    paddingHorizontal: 32,
-    paddingTop: 36,
-    paddingBottom: 54,
+    paddingHorizontal: 40,
+    paddingBottom: 60,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -20 },
-    shadowOpacity: 0.2,
-    shadowRadius: 24,
-    elevation: 30,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
   },
   paginationContainer: {
     flexDirection: 'row',
-    marginBottom: 28,
+    marginBottom: 40,
     alignItems: 'center',
   },
   dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#EAEAEA',
-    marginHorizontal: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginHorizontal: 3,
   },
   activeDot: {
     width: 24,
-    height: 8,
-    backgroundColor: colors.primary,
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 3,
+  },
+  textContainer: {
+    alignItems: 'center',
+    marginBottom: 48,
   },
   title: {
-    fontSize: 28,
-    fontWeight: typography.weightBold,
-    color: colors.text,
+    fontSize: 36,
+    fontWeight: '900',
+    color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 38,
+    lineHeight: 44,
     marginBottom: 16,
-    letterSpacing: -0.5,
+    letterSpacing: -1.5,
   },
   highlight: {
-    color: colors.primary,
+    color: '#FF6B4A',
   },
   description: {
     fontSize: 16,
-    color: colors.muted,
+    color: 'rgba(255, 255, 255, 0.6)',
     textAlign: 'center',
     lineHeight: 24,
-    marginBottom: 36,
-    paddingHorizontal: 12,
+    paddingHorizontal: 4,
   },
-  buttonWrapper: {
+  mainButton: {
     width: '100%',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 12,
+    height: 64,
+    borderRadius: 32,
+    overflow: 'hidden',
+    shadowColor: '#FFFFFF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 4,
   },
-  button: {
-    borderRadius: 30,
-    height: 62,
+  btnGradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  mainButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
   footer: {
     flexDirection: 'row',
@@ -284,12 +292,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    color: colors.muted,
+    color: 'rgba(255, 255, 255, 0.4)',
     fontSize: 15,
   },
   loginLink: {
-    color: colors.primary,
+    color: '#FFFFFF',
     fontSize: 15,
-    fontWeight: typography.weightBold,
+    fontWeight: '800',
+    textDecorationLine: 'underline',
   },
 });

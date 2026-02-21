@@ -1,71 +1,56 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Dimensions, Animated } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, TouchableOpacity, StyleSheet, Dimensions, Animated, Text } from 'react-native';
 import { colors } from '../theme/colors';
-import { House, ShoppingBag, Heart, User, Package } from 'lucide-react-native';
+import { typography } from '../theme/typography';
+import { House, ShoppingBag, Heart, User, Store } from 'lucide-react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
 type NavItemProps = {
     icon: any;
     routeName: string;
+    label: string;
     isActive: boolean;
     onPress: () => void;
 };
 
-const NavItem = ({ icon: Icon, isActive, onPress }: NavItemProps) => {
-    const scaleAnim = React.useRef(new Animated.Value(1)).current;
+const NavItem = ({ icon: Icon, label, isActive, onPress }: NavItemProps) => {
+    const animation = useRef(new Animated.Value(isActive ? 1 : 0)).current;
 
-    React.useEffect(() => {
-        if (isActive) {
-            Animated.spring(scaleAnim, {
-                toValue: 1.1,
-                tension: 300,
-                friction: 10,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            Animated.spring(scaleAnim, {
-                toValue: 1,
-                tension: 300,
-                friction: 10,
-                useNativeDriver: true,
-            }).start();
-        }
+    useEffect(() => {
+        Animated.spring(animation, {
+            toValue: isActive ? 1 : 0,
+            friction: 8,
+            tension: 50,
+            useNativeDriver: false,
+        }).start();
     }, [isActive]);
 
+    const backgroundColor = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['transparent', '#FF6B4A']
+    });
+
+    const itemWidth = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [50, 110]
+    });
+
     return (
-        <TouchableOpacity 
-            style={styles.navItem} 
-            onPress={onPress} 
-            activeOpacity={0.7}
-        >
-            {isActive ? (
-                <LinearGradient
-                    colors={[colors.primary, '#FF6B4A']}
-                    style={styles.activeIconContainer}
-                >
-                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-                        <Icon
-                            size={22}
-                            color={colors.white}
-                            strokeWidth={2.5}
-                        />
-                    </Animated.View>
-                </LinearGradient>
-            ) : (
+        <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+            <Animated.View style={[styles.navItem, { backgroundColor, width: itemWidth }]}>
                 <Icon
                     size={22}
-                    color="#9CA3AF"
-                    strokeWidth={2}
+                    color={isActive ? colors.white : '#9CA3AF'}
+                    strokeWidth={isActive ? 2.5 : 2}
                 />
-            )}
-            {isActive && (
-                <View style={styles.activeIndicator}>
-                    <View style={styles.activeNavDot} />
-                </View>
-            )}
+                {isActive && (
+                    <Animated.View style={{ marginLeft: 8, opacity: animation }}>
+                        <Text style={styles.navLabel} numberOfLines={1}>{label}</Text>
+                    </Animated.View>
+                )}
+            </Animated.View>
         </TouchableOpacity>
     );
 };
@@ -75,39 +60,43 @@ export const BottomNav = () => {
     const route = useRoute();
     const currentRoute = route.name;
 
-    // Check if current route is an order-related screen
     const isOrderScreen = currentRoute === 'OrderTracking' || currentRoute === 'Orders' || currentRoute === 'OrderSuccess';
 
     return (
-        <View style={styles.container}>
+        <View style={styles.floatingContainer}>
             <View style={styles.content}>
                 <NavItem
                     icon={House}
                     routeName="Home"
+                    label="Home"
                     isActive={currentRoute === 'Home'}
                     onPress={() => navigation.navigate('Home')}
                 />
                 <NavItem
+                    icon={Store}
+                    routeName="Shop"
+                    label="Shop"
+                    isActive={currentRoute === 'Shop' || currentRoute === 'CategoryListing'}
+                    onPress={() => navigation.navigate('Shop')}
+                />
+                <NavItem
                     icon={ShoppingBag}
                     routeName="Cart"
+                    label="Cart"
                     isActive={currentRoute === 'Cart'}
                     onPress={() => navigation.navigate('Cart')}
                 />
                 <NavItem
-                    icon={Package}
-                    routeName="Orders"
-                    isActive={isOrderScreen}
-                    onPress={() => navigation.navigate('OrderTracking')}
-                />
-                <NavItem
                     icon={Heart}
                     routeName="Favorites"
+                    label="Favs"
                     isActive={currentRoute === 'Favorites'}
                     onPress={() => navigation.navigate('Favorites')}
                 />
                 <NavItem
                     icon={User}
                     routeName="Profile"
+                    label="Profile"
                     isActive={currentRoute === 'Profile'}
                     onPress={() => navigation.navigate('Profile')}
                 />
@@ -117,57 +106,37 @@ export const BottomNav = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
+    floatingContainer: {
         position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: '#FFFFFF',
-        borderTopWidth: 1,
-        borderTopColor: '#F0F0F0',
+        bottom: 24,
+        alignSelf: 'center',
+        backgroundColor: '#1C1C1E',
+        borderRadius: 40,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: -8 },
-        shadowOpacity: 0.12,
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
         shadowRadius: 20,
-        elevation: 16,
-        height: 88,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
+        elevation: 24,
+        width: width * 0.92,
+        zIndex: 1000,
     },
     content: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingTop: 12,
-        paddingBottom: 8,
-        paddingHorizontal: 4,
     },
     navItem: {
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 8,
-        width: 68,
-        position: 'relative',
+        paddingVertical: 12,
+        borderRadius: 30,
     },
-    activeIconContainer: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 6,
-    },
-    activeIndicator: {
-        marginTop: 4,
-    },
-    activeNavDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: colors.primary,
+    navLabel: {
+        color: colors.white,
+        fontWeight: typography.weightBold,
+        fontSize: 13,
     },
 });

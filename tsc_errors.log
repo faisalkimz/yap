@@ -1,0 +1,1 @@
+src/screens/CartScreen.tsx(143,34): error TS2304: Cannot find name 'ShoppingCart'.

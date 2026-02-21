@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     StyleSheet,
     Text,
@@ -9,32 +9,22 @@ import {
     Platform,
     ScrollView,
     StatusBar,
+    Image,
+    TextInput,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
-import { PrimaryButton } from '../components/PrimaryButton';
-import { Input } from '../components/Input';
-import User from 'lucide-react-native/dist/esm/icons/user';
-import Mail from 'lucide-react-native/dist/esm/icons/mail';
-import Lock from 'lucide-react-native/dist/esm/icons/lock';
-import ChevronLeft from 'lucide-react-native/dist/esm/icons/chevron-left';
-import Github from 'lucide-react-native/dist/esm/icons/github';
+import { User, Mail, Lock, ChevronLeft, Github, Eye, EyeOff } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
 
 type Props = NativeStackScreenProps<RootStackParamList, 'GetStarted'>;
 
 export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
     return (
         <View style={styles.mainContainer}>
-            <StatusBar barStyle="dark-content" />
-            <LinearGradient
-                colors={['#FFF5F2', '#FFFFFF']}
-                style={StyleSheet.absoluteFill}
-            />
-
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -44,8 +34,9 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                         <TouchableOpacity
                             onPress={() => navigation.goBack()}
                             style={styles.backButton}
+                            activeOpacity={0.8}
                         >
-                            <ChevronLeft size={24} color={colors.text} />
+                            <ChevronLeft size={24} color="#1C1C1E" strokeWidth={2.5} />
                         </TouchableOpacity>
                     </View>
 
@@ -55,73 +46,102 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                         showsVerticalScrollIndicator={false}
                     >
                         <View style={styles.header}>
-                            <Text style={styles.title}>Create Account</Text>
-                            <Text style={styles.subtitle}>Start your fashion journey with us today</Text>
+                            <Text style={styles.title}>Join Yap</Text>
+                            <Text style={styles.subtitle}>Unlock a world of curated luxury fashion and exclusive drops.</Text>
                         </View>
 
                         <View style={styles.form}>
-                            <Input
-                                label="Full Name"
-                                placeholder="John Doe"
-                                autoCapitalize="words"
-                                icon={User}
-                            />
+                            {/* Full Name Input */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Full Name</Text>
+                                <View style={styles.inputWrapper}>
+                                    <User size={20} color="#8E8E93" style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Faisal Kimz"
+                                        placeholderTextColor="#A0A0A0"
+                                        autoCapitalize="words"
+                                    />
+                                </View>
+                            </View>
 
-                            <Input
-                                label="Email Address"
-                                placeholder="name@example.com"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                icon={Mail}
-                            />
+                            {/* Email Input */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Email Address</Text>
+                                <View style={styles.inputWrapper}>
+                                    <Mail size={20} color="#8E8E93" style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="faisal@example.com"
+                                        placeholderTextColor="#A0A0A0"
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                    />
+                                </View>
+                            </View>
 
-                            <Input
-                                label="Password"
-                                placeholder="••••••••"
-                                secureTextEntry
-                                icon={Lock}
-                            />
+                            {/* Password Input */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Password</Text>
+                                <View style={styles.inputWrapper}>
+                                    <Lock size={20} color="#8E8E93" style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="••••••••"
+                                        placeholderTextColor="#A0A0A0"
+                                        secureTextEntry={!showPassword}
+                                    />
+                                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+                                        {showPassword ? <EyeOff size={20} color="#8E8E93" /> : <Eye size={20} color="#8E8E93" />}
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
 
                             <View style={styles.termsWrapper}>
                                 <Text style={styles.termsText}>
-                                    By proceeding, you agree to our{' '}
+                                    By creating an account, you agree to our{' '}
                                     <Text style={styles.termsLink}>Terms</Text> &{' '}
-                                    <Text style={styles.termsLink}>Privacy Policy</Text>
+                                    <Text style={styles.termsLink}>Privacy</Text>
                                 </Text>
                             </View>
 
-                            <PrimaryButton
-                                label="Create Account"
-                                onPress={() => navigation.replace('Home')}
+                            <TouchableOpacity
                                 style={styles.signUpButton}
-                            />
+                                onPress={() => navigation.navigate('EmailVerification')}
+                                activeOpacity={0.9}
+                            >
+                                <LinearGradient
+                                    colors={['#1C1C1E', '#2C2C2E']}
+                                    style={styles.buttonGradient}
+                                >
+                                    <Text style={styles.signUpButtonText}>Create Account</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
 
                             <View style={styles.divider}>
                                 <View style={styles.line} />
-                                <Text style={styles.dividerText}>Or sign up with</Text>
+                                <Text style={styles.dividerText}>Or register with</Text>
                                 <View style={styles.line} />
                             </View>
 
                             <View style={styles.socialButtons}>
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <View style={styles.googleIconContainer}>
-                                        <View style={[styles.googleDot, { backgroundColor: '#4285F4' }]} />
-                                        <View style={[styles.googleDot, { backgroundColor: '#EA4335' }]} />
-                                        <View style={[styles.googleDot, { backgroundColor: '#FBBC05' }]} />
-                                        <View style={[styles.googleDot, { backgroundColor: '#34A853' }]} />
-                                    </View>
+                                <TouchableOpacity style={styles.socialButton} activeOpacity={0.8} onPress={() => navigation.navigate('SocialLoginCallback')}>
+                                    <Image
+                                        source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png' }}
+                                        style={styles.socialIcon}
+                                    />
                                     <Text style={styles.socialButtonText}>Google</Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.socialButton}>
-                                    <Github size={20} color="#000" style={{ marginRight: 10 }} />
+                                <TouchableOpacity style={styles.socialButton} activeOpacity={0.8} onPress={() => navigation.navigate('SocialLoginCallback')}>
+                                    <Github size={20} color="#000" style={styles.socialIcon} />
                                     <Text style={styles.socialButtonText}>GitHub</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
 
                         <View style={styles.footer}>
-                            <Text style={styles.footerText}>Already a member? </Text>
+                            <Text style={styles.footerText}>Found your way back? </Text>
                             <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
                                 <Text style={styles.signInLink}>Log In</Text>
                             </TouchableOpacity>
@@ -149,14 +169,9 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#F5F5F5',
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
     },
     scrollContent: {
         paddingHorizontal: 28,
@@ -165,54 +180,91 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 40,
-        alignItems: 'center',
-    },
-    welcomeText: {
-        fontSize: 16,
-        color: colors.primary,
-        fontWeight: '700',
-        marginBottom: 8,
     },
     title: {
-        fontSize: 34,
-        fontWeight: typography.weightBold,
-        color: colors.text,
+        fontSize: 36,
+        fontWeight: '900',
+        color: '#1C1C1E',
         marginBottom: 12,
-        letterSpacing: -1,
-        textAlign: 'center',
+        letterSpacing: -1.5,
     },
     subtitle: {
-        fontSize: 15,
-        color: '#707070',
-        lineHeight: 22,
-        textAlign: 'center',
-        paddingHorizontal: 20,
+        fontSize: 16,
+        color: '#8E8E93',
+        lineHeight: 24,
+        paddingRight: 30,
     },
     form: {
         width: '100%',
     },
-    termsWrapper: {
-        marginBottom: 36,
+    inputContainer: {
+        marginBottom: 20,
+    },
+    inputLabel: {
+        fontSize: 13,
+        fontWeight: '800',
+        color: '#1C1C1E',
+        marginBottom: 8,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    inputWrapper: {
+        flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+        borderRadius: 18,
+        paddingHorizontal: 16,
+        height: 60,
+        borderWidth: 1,
+        borderColor: '#F0F0F0',
+    },
+    inputIcon: {
+        marginRight: 12,
+    },
+    input: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#1C1C1E',
+        height: '100%',
+    },
+    eyeBtn: {
+        padding: 8,
+    },
+    termsWrapper: {
+        marginBottom: 32,
+        marginTop: 8,
+        paddingHorizontal: 4,
     },
     termsText: {
         fontSize: 13,
-        color: '#909090',
+        color: '#8E8E93',
         lineHeight: 20,
-        textAlign: 'center',
     },
     termsLink: {
-        color: colors.primary,
-        fontWeight: '700',
+        color: '#1C1C1E',
+        fontWeight: '800',
     },
     signUpButton: {
         height: 64,
-        borderRadius: 22,
-        shadowColor: colors.primary,
+        borderRadius: 32,
+        overflow: 'hidden',
+        shadowColor: '#1C1C1E',
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.25,
         shadowRadius: 15,
         elevation: 8,
+    },
+    buttonGradient: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    signUpButtonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '800',
+        letterSpacing: 0.5,
     },
     divider: {
         flexDirection: 'row',
@@ -222,21 +274,24 @@ const styles = StyleSheet.create({
     line: {
         flex: 1,
         height: 1,
-        backgroundColor: '#EAEAEA',
+        backgroundColor: '#F0F0F0',
     },
     dividerText: {
         marginHorizontal: 16,
-        color: '#A0A0A0',
-        fontSize: 14,
-        fontWeight: '600',
+        color: '#C7C7CC',
+        fontSize: 13,
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     socialButtons: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        gap: 16,
     },
     socialButton: {
+        flex: 1,
         flexDirection: 'row',
-        width: '47%',
         height: 60,
         borderRadius: 20,
         backgroundColor: '#FFFFFF',
@@ -250,35 +305,29 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 1,
     },
-    googleIconContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: 14,
-        height: 14,
+    socialIcon: {
+        width: 20,
+        height: 20,
         marginRight: 10,
-    },
-    googleDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        margin: 0.5,
+        resizeMode: 'contain',
     },
     socialButtonText: {
         fontSize: 15,
         fontWeight: '700',
-        color: colors.text,
+        color: '#1C1C1E',
     },
     footer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 48,
+        marginTop: 40,
     },
     footerText: {
-        color: '#707070',
+        color: '#8E8E93',
         fontSize: 15,
+        fontWeight: '500',
     },
     signInLink: {
-        color: colors.text,
+        color: '#1C1C1E',
         fontSize: 15,
         fontWeight: '800',
     },

@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
-import Eye from 'lucide-react-native/dist/esm/icons/eye';
-import EyeOff from 'lucide-react-native/dist/esm/icons/eye-off';
+import { Eye, EyeOff } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
 
 

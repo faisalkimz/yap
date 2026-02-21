@@ -9,13 +9,14 @@ import {
     ScrollView,
     TextInput,
     Modal,
-    Dimensions
+    Dimensions,
+    Platform,
+    StatusBar
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
-import { ChevronLeft, MapPin, Pencil, CheckCircle2 } from 'lucide-react-native';
+import { ChevronLeft, MapPin, Pencil, CheckCircle2, ShieldCheck, Wallet } from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Checkout'>;
 
@@ -42,7 +43,7 @@ const CHECKOUT_ITEMS = [
 
 export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     const [isPaymentModalVisible, setPaymentModalVisible] = useState(false);
-    const [selectedPayment, setSelectedPayment] = useState('Credit Card');
+    const [selectedPayment, setSelectedPayment] = useState('Apple Pay'); // Updated defaults
 
     const subtotal = CHECKOUT_ITEMS.reduce((sum, item) => sum + (item.price * item.qty), 0);
     const vat = 350;
@@ -56,91 +57,93 @@ export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FAFAFA" />
             <SafeAreaView style={styles.safeArea}>
-                {/* Header */}
+                {/* Modern Header */}
                 <View style={styles.header}>
                     <TouchableOpacity
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
-                        <ChevronLeft size={24} color={colors.text} />
+                        <ChevronLeft size={24} color="#1C1C1E" strokeWidth={2.5} />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Checkout</Text>
-                    <View style={{ width: 40 }} />
+                    <Text style={styles.headerTitle}>Review & Pay</Text>
+                    <View style={{ width: 48 }} />
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-                    {/* Items List */}
-                    {CHECKOUT_ITEMS.map((item) => (
-                        <View key={item.id} style={styles.itemCard}>
-                            <Image source={{ uri: item.image }} style={styles.itemImage} />
-                            <View style={styles.itemDetails}>
-                                <Text style={styles.itemName}>{item.name}</Text>
-                                <Text style={styles.itemType}>{item.type}</Text>
-                                <Text style={styles.itemPrice}>GX {item.price.toLocaleString()}</Text>
-                            </View>
-                            <View style={styles.qtyBadge}>
-                                <Text style={styles.qtyText}>x{item.qty}</Text>
-                            </View>
-                        </View>
-                    ))}
 
-                    {/* Delivery Address */}
-                    <Text style={styles.sectionTitle}>Delivery Address</Text>
+                    {/* Delivery Address Card */}
+                    <Text style={styles.sectionTitle}>Shipping Address</Text>
                     <View style={styles.addressContainer}>
-                        <View style={styles.addressRow}>
-                            <Text style={styles.addressText}>
-                                6, Cole Palmer Avenue, London Portugal
-                            </Text>
-                            <TouchableOpacity>
-                                <Pencil size={18} color={colors.muted} />
-                            </TouchableOpacity>
+                        <View style={styles.addressIconWrapper}>
+                            <MapPin size={24} color="#1C1C1E" />
                         </View>
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.addressName}>Faisal Kimz</Text>
+                            <Text style={styles.addressText}>
+                                6, Cole Palmer Avenue, London, UK
+                            </Text>
+                            <Text style={styles.addressText}>+44 7890 123456</Text>
+                        </View>
+                        <TouchableOpacity style={styles.editBtn}>
+                            <Pencil size={18} color="#1C1C1E" />
+                        </TouchableOpacity>
+                    </View>
+
+                    {/* Minimal Items List */}
+                    <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Order Details</Text>
+                    <View style={styles.itemsWrapper}>
+                        {CHECKOUT_ITEMS.map((item, index) => (
+                            <View key={item.id} style={[styles.itemCard, index === CHECKOUT_ITEMS.length - 1 && { borderBottomWidth: 0 }]}>
+                                <Image source={{ uri: item.image }} style={styles.itemImage} />
+                                <View style={styles.itemDetails}>
+                                    <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+                                    <Text style={styles.itemType}>{item.type}</Text>
+                                    <View style={styles.priceRowItem}>
+                                        <Text style={styles.itemPrice}>GX {item.price.toLocaleString()}</Text>
+                                        <Text style={styles.qtyText}>Qty: {item.qty}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        ))}
                     </View>
 
                     {/* Summary */}
                     <View style={styles.summaryContainer}>
                         <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Price</Text>
+                            <Text style={styles.summaryLabel}>Subtotal</Text>
                             <Text style={styles.summaryValue}>GX {subtotal.toLocaleString()}</Text>
                         </View>
                         <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>VAT</Text>
-                            <Text style={styles.summaryValue}>GX {vat}</Text>
-                        </View>
-                        <View style={styles.summaryRow}>
-                            <Text style={styles.summaryLabel}>Delivery Fee</Text>
+                            <Text style={styles.summaryLabel}>Delivery</Text>
                             <Text style={styles.summaryValue}>GX {delivery}</Text>
                         </View>
-                        <View style={[styles.summaryRow, styles.totalRow]}>
+                        <View style={styles.summaryRow}>
+                            <Text style={styles.summaryLabel}>Tax (VAT)</Text>
+                            <Text style={styles.summaryValue}>GX {vat}</Text>
+                        </View>
+                        <View style={styles.divider} />
+                        <View style={styles.totalRow}>
                             <Text style={styles.totalLabel}>Total</Text>
                             <Text style={styles.totalValue}>GX {total.toLocaleString()}</Text>
                         </View>
                     </View>
-
-                    {/* Discount Code */}
-                    <Text style={styles.discountLabel}>Discount Code (Optional)</Text>
-                    <View style={styles.discountInputContainer}>
-                        <TextInput
-                            placeholder="Enter Code"
-                            style={styles.discountInput}
-                            placeholderTextColor={colors.muted}
-                        />
-                    </View>
                 </ScrollView>
 
-                {/* Bottom Button */}
-                <View style={styles.bottomBar}>
+                {/* Bottom Bar */}
+                <View style={styles.bottomCheckoutBar}>
                     <TouchableOpacity
                         style={styles.payButton}
                         onPress={() => setPaymentModalVisible(true)}
+                        activeOpacity={0.9}
                     >
-                        <Text style={styles.payButtonText}>Continue to Pay GX {total.toLocaleString()}</Text>
+                        <Text style={styles.payButtonText}>Select Payment Method</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
 
-            {/* Payment Modal */}
+            {/* Luxurious Payment Modal */}
             <Modal
                 visible={isPaymentModalVisible}
                 transparent
@@ -148,12 +151,19 @@ export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
                 onRequestClose={() => setPaymentModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
+                    <TouchableOpacity style={{ flex: 1 }} onPress={() => setPaymentModalVisible(false)} />
                     <View style={styles.modalContent}>
+                        <View style={styles.modalDragIndicator} />
+
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Payment Methods</Text>
+                            <Text style={styles.modalTitle}>Payment Method</Text>
+                            <View style={styles.secureBadge}>
+                                <ShieldCheck size={14} color="#34C759" />
+                                <Text style={styles.secureText}>Secure</Text>
+                            </View>
                         </View>
 
-                        {['Credit Card', 'Google Pay', 'PayPal'].map((method) => (
+                        {['Apple Pay', 'Credit Card', 'PayPal'].map((method) => (
                             <TouchableOpacity
                                 key={method}
                                 style={[
@@ -161,39 +171,34 @@ export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
                                     selectedPayment === method && styles.activePaymentOption
                                 ]}
                                 onPress={() => setSelectedPayment(method)}
+                                activeOpacity={0.8}
                             >
                                 <View style={styles.paymentOptionLeft}>
-                                    {/* Placeholder icons */}
-                                    <View style={styles.paymentIconPlaceholder} />
+                                    <View style={styles.paymentIconPlaceholder}>
+                                        <Wallet size={20} color={selectedPayment === method ? '#FFFFFF' : '#1C1C1E'} />
+                                    </View>
                                     <View>
-                                        <Text style={styles.paymentOptionTitle}>{method}</Text>
-                                        {method === 'Credit Card' && <Text style={styles.paymentOptionSub}>2334 5454 ****</Text>}
-                                        {method === 'Google Pay' && <Text style={styles.paymentOptionSub}>Micheal K...</Text>}
-                                        {method === 'PayPal' && <Text style={styles.paymentOptionSub}>Micheal K...</Text>}
+                                        <Text style={[styles.paymentOptionTitle, selectedPayment === method && { color: '#FFFFFF' }]}>{method}</Text>
+                                        {method === 'Credit Card' && <Text style={[styles.paymentOptionSub, selectedPayment === method && { color: 'rgba(255,255,255,0.7)' }]}>**** **** **** 5454</Text>}
+                                        {method === 'Apple Pay' && <Text style={[styles.paymentOptionSub, selectedPayment === method && { color: 'rgba(255,255,255,0.7)' }]}>Connected</Text>}
+                                        {method === 'PayPal' && <Text style={[styles.paymentOptionSub, selectedPayment === method && { color: 'rgba(255,255,255,0.7)' }]}>faisal@example.com</Text>}
                                     </View>
                                 </View>
                                 <View style={[
                                     styles.radioCircle,
                                     selectedPayment === method && styles.activeRadioCircle
                                 ]}>
-                                    {selectedPayment === method && <View style={styles.radioDot} />}
+                                    {selectedPayment === method && <CheckCircle2 size={16} color="#FFFFFF" />}
                                 </View>
                             </TouchableOpacity>
                         ))}
 
-                        <View style={styles.modalDivider} />
-
-                        <View style={styles.addressRow}>
-                            <Text style={{ color: colors.muted, fontSize: 12 }}>Delivery Address:</Text>
-                        </View>
-                        <Text style={[styles.addressText, { marginBottom: 20 }]}>6, Cole Palmer Avenue, Lagos Portugal</Text>
-
-
                         <TouchableOpacity
-                            style={styles.payButton}
-                            onPress={handlePayment} // Navigate to Success
+                            style={styles.confirmPayButton}
+                            onPress={handlePayment}
+                            activeOpacity={0.9}
                         >
-                            <Text style={styles.payButtonText}>Continue to Pay GX {total.toLocaleString()}</Text>
+                            <Text style={styles.confirmPayButtonText}>Pay GX {total.toLocaleString()}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -202,6 +207,7 @@ export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -209,265 +215,341 @@ const styles = StyleSheet.create({
     },
     safeArea: {
         flex: 1,
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     },
     header: {
         paddingHorizontal: 24,
-        paddingVertical: 12,
+        paddingTop: 16,
+        paddingBottom: 24,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginTop: 10,
     },
     backButton: {
-        width: 40,
-        height: 40,
+        width: 48,
+        height: 48,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors.white,
-        borderRadius: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
     },
     headerTitle: {
-        fontSize: 18,
-        fontWeight: typography.weightBold,
-        color: colors.text,
+        fontSize: 20,
+        fontWeight: '900',
+        color: '#1C1C1E',
+        letterSpacing: -0.5,
     },
     content: {
         paddingHorizontal: 24,
-        paddingTop: 24,
         paddingBottom: 120,
     },
-    itemCard: {
-        backgroundColor: colors.white,
-        borderRadius: 20,
-        padding: 16,
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1C1C1E',
         marginBottom: 16,
+    },
+
+    // Address
+    addressContainer: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        padding: 20,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.04,
+        shadowRadius: 15,
+        elevation: 4,
+    },
+    addressIconWrapper: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: '#F5F5F5',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    addressName: {
+        fontSize: 16,
+        fontWeight: '800',
+        color: '#1C1C1E',
+        marginBottom: 4,
+    },
+    addressText: {
+        fontSize: 14,
+        color: '#8E8E93',
+        lineHeight: 22,
+    },
+    editBtn: {
+        padding: 8,
+        backgroundColor: '#F5F5F5',
+        borderRadius: 12,
+    },
+
+    // Items
+    itemsWrapper: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.04,
+        shadowRadius: 15,
+        elevation: 4,
+    },
+    itemCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 4,
-        borderWidth: 1,
-        borderColor: '#F5F5F5',
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: '#F5F5F5',
     },
     itemImage: {
-        width: 60,
-        height: 60,
-        borderRadius: 12,
+        width: 70,
+        height: 70,
+        borderRadius: 16,
         backgroundColor: '#F0F0F0',
         marginRight: 16,
     },
     itemDetails: {
         flex: 1,
+        justifyContent: 'center',
     },
     itemName: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#1C1C1E',
         marginBottom: 4,
     },
     itemType: {
         fontSize: 12,
-        color: colors.muted,
-        marginBottom: 4,
-    },
-    itemPrice: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colors.primary,
-    },
-    qtyBadge: {
-        backgroundColor: '#F5F5F5',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 8,
-    },
-    qtyText: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colors.text,
-    },
-    sectionTitle: {
-        fontSize: 14,
-        color: colors.muted,
+        color: '#A0A0A0',
+        fontWeight: '600',
         marginBottom: 8,
-        marginTop: 16,
     },
-    addressContainer: {
-        marginBottom: 24,
-    },
-    addressRow: {
+    priceRowItem: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    addressText: {
-        fontSize: 14,
-        color: colors.text,
-        maxWidth: '90%',
-        lineHeight: 20,
-        fontWeight: '500',
+    itemPrice: {
+        fontSize: 15,
+        fontWeight: '900',
+        color: '#1C1C1E',
     },
+    qtyText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#8E8E93',
+    },
+
+    // Summary
     summaryContainer: {
-        marginTop: 10,
-        marginBottom: 24,
+        marginTop: 24,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 24,
+        padding: 24,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.04,
+        shadowRadius: 15,
+        elevation: 4,
     },
     summaryRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 12,
+        marginBottom: 16,
     },
     summaryLabel: {
-        fontSize: 14,
-        color: colors.muted,
+        fontSize: 15,
+        color: '#8E8E93',
+        fontWeight: '500',
     },
     summaryValue: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 15,
+        fontWeight: '800',
+        color: '#1C1C1E',
+    },
+    divider: {
+        height: 1,
+        backgroundColor: '#F5F5F5',
+        marginVertical: 16,
     },
     totalRow: {
-        marginTop: 8,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#E0E0E0',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     totalLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 18,
+        fontWeight: '800',
+        color: '#1C1C1E',
     },
     totalValue: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 22,
+        fontWeight: '900',
+        color: '#FF6B4A',
     },
-    discountLabel: {
-        fontSize: 12,
-        color: colors.muted,
-        marginBottom: 8,
-    },
-    discountInputContainer: {
-        backgroundColor: colors.white,
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        height: 50,
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderColor: '#F0F0F0',
-    },
-    discountInput: {
-        fontSize: 14,
-        color: colors.text,
-    },
-    bottomBar: {
+
+    // Bottom Bar
+    bottomCheckoutBar: {
         position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: colors.white,
         paddingHorizontal: 24,
-        paddingTop: 16,
-        paddingBottom: 32,
+        paddingVertical: 16,
+        paddingBottom: Platform.OS === 'ios' ? 34 : 24,
+        backgroundColor: 'rgba(250, 250, 250, 0.95)',
         borderTopWidth: 1,
         borderTopColor: '#F5F5F5',
     },
     payButton: {
-        backgroundColor: colors.primary,
-        height: 58,
-        borderRadius: 30,
+        backgroundColor: '#1C1C1E',
+        height: 64,
+        borderRadius: 32,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.4,
-        shadowRadius: 16,
+        shadowColor: '#1C1C1E',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
         elevation: 12,
     },
     payButtonText: {
-        color: colors.white,
-        fontSize: 16,
-        fontWeight: 'bold',
+        color: '#FFFFFF',
+        fontSize: 17,
+        fontWeight: '800',
     },
-    // Modal Styles
+
+    // Modal
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 32,
+        borderTopRightRadius: 32,
         padding: 24,
-        paddingBottom: 40,
+        paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    },
+    modalDragIndicator: {
+        width: 48,
+        height: 6,
+        borderRadius: 3,
+        backgroundColor: '#E0E0E0',
+        alignSelf: 'center',
+        marginBottom: 24,
     },
     modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: 24,
     },
     modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 20,
+        fontWeight: '900',
+        color: '#1C1C1E',
+    },
+    secureBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(52, 199, 89, 0.1)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+    },
+    secureText: {
+        color: '#34C759',
+        fontWeight: '700',
+        fontSize: 12,
+        marginLeft: 4,
     },
     paymentOption: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 16,
-        backgroundColor: '#FAFAFA',
-        borderRadius: 16,
+        padding: 20,
+        backgroundColor: '#F8F8F8',
+        borderRadius: 20,
         marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#F0F0F0',
+        borderWidth: 2,
+        borderColor: 'transparent',
     },
     activePaymentOption: {
-        borderColor: colors.primary,
-        backgroundColor: '#FFF5F2', // Light orange tint
+        backgroundColor: '#1C1C1E',
+        borderColor: '#1C1C1E',
+        shadowColor: '#1C1C1E',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 15,
+        elevation: 8,
     },
     paymentOptionLeft: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     paymentIconPlaceholder: {
-        width: 32,
-        height: 24,
-        backgroundColor: '#EEE',
-        borderRadius: 4,
-        marginRight: 12,
+        width: 44,
+        height: 44,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        borderRadius: 12,
+        marginRight: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     paymentOptionTitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 16,
+        fontWeight: '800',
+        color: '#1C1C1E',
+        marginBottom: 4,
     },
     paymentOptionSub: {
-        fontSize: 12,
-        color: colors.muted,
+        fontSize: 13,
+        color: '#8E8E93',
+        fontWeight: '500',
     },
     radioCircle: {
-        width: 20,
-        height: 20,
-        borderRadius: 10,
+        width: 24,
+        height: 24,
+        borderRadius: 12,
         borderWidth: 2,
-        borderColor: '#E0E0E0',
+        borderColor: '#D0D0D0',
         justifyContent: 'center',
         alignItems: 'center',
     },
     activeRadioCircle: {
-        borderColor: colors.primary,
+        borderColor: '#FFFFFF',
+        backgroundColor: '#1C1C1E',
     },
-    radioDot: {
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: colors.primary,
+    confirmPayButton: {
+        backgroundColor: '#FF6B4A',
+        height: 64,
+        borderRadius: 32,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 24,
+        shadowColor: '#FF6B4A',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 20,
+        elevation: 12,
     },
-    modalDivider: {
-        height: 1,
-        backgroundColor: '#EAEAEA',
-        marginVertical: 20,
+    confirmPayButtonText: {
+        color: '#FFFFFF',
+        fontSize: 17,
+        fontWeight: '900',
+        letterSpacing: 0.5,
     },
 });
-

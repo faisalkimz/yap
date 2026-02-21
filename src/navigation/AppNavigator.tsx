@@ -21,6 +21,20 @@ import {
   SettingsScreen,
   SupportScreen
 } from '../screens/ProfileSections';
+import { ShopScreen } from '../screens/ShopScreen';
+import { CategoryListingScreen } from '../screens/CategoryListingScreen';
+import { SubCategoryScreen } from '../screens/SubCategoryScreen';
+import { BrandScreen } from '../screens/BrandScreen';
+import { SearchResultsScreen } from '../screens/SearchResultsScreen';
+import { FiltersScreen } from '../screens/FiltersScreen';
+
+// Auth Screens
+import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
+import { EmailVerificationScreen } from '../screens/auth/EmailVerificationScreen';
+import { ForgotPasswordScreen } from '../screens/auth/ForgotPasswordScreen';
+import { ResetPasswordScreen } from '../screens/auth/ResetPasswordScreen';
+import { SocialLoginCallbackScreen } from '../screens/auth/SocialLoginCallbackScreen';
+import { LogoutConfirmationScreen } from '../screens/auth/LogoutConfirmationScreen';
 
 import { enableScreens } from 'react-native-screens';
 
@@ -46,6 +60,18 @@ export type RootStackParamList = {
   Address: undefined;
   Settings: undefined;
   Support: undefined;
+  Shop: undefined;
+  CategoryListing: undefined;
+  SubCategory: { categoryId: string, categoryName: string };
+  Brand: { brandId: string, brandName: string };
+  SearchResults: { query: string };
+  Filters: undefined;
+  OtpVerification: undefined;
+  EmailVerification: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: undefined;
+  SocialLoginCallback: undefined;
+  LogoutConfirmation: undefined;
 };
 
 
@@ -81,6 +107,22 @@ export const AppNavigator = () => {
         <Stack.Screen name="Address" component={AddressScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
+
+        {/* Store & Products */}
+        <Stack.Screen name="Shop" component={ShopScreen} />
+        <Stack.Screen name="CategoryListing" component={CategoryListingScreen} />
+        <Stack.Screen name="SubCategory" component={SubCategoryScreen} />
+        <Stack.Screen name="Brand" component={BrandScreen} />
+        <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
+        <Stack.Screen name="Filters" component={FiltersScreen} />
+
+        {/* Auth Workflows */}
+        <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />
+        <Stack.Screen name="EmailVerification" component={EmailVerificationScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+        <Stack.Screen name="SocialLoginCallback" component={SocialLoginCallbackScreen} />
+        <Stack.Screen name="LogoutConfirmation" component={LogoutConfirmationScreen} options={{ presentation: 'transparentModal', animation: 'fade' }} />
       </Stack.Navigator>
 
 

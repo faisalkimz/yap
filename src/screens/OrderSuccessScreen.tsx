@@ -1,54 +1,70 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Animated, StatusBar, Platform } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { colors } from '../theme/colors';
-import { typography } from '../theme/typography';
 import { Check } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OrderSuccess'>;
 
 export const OrderSuccessScreen: React.FC<Props> = ({ navigation }) => {
-    const scaleAnim = React.useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(0)).current;
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        Animated.spring(scaleAnim, {
-            toValue: 1,
-            friction: 6,
-            tension: 50,
-            useNativeDriver: true,
-        }).start();
+        Animated.parallel([
+            Animated.spring(scaleAnim, {
+                toValue: 1,
+                friction: 6,
+                tension: 40,
+                useNativeDriver: true,
+            }),
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            })
+        ]).start();
     }, []);
 
     return (
         <View style={styles.container}>
+            <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.content}>
                     <Animated.View style={[styles.iconContainer, { transform: [{ scale: scaleAnim }] }]}>
-                        <Check size={40} color={colors.white} strokeWidth={3} />
+                        <LinearGradient
+                            colors={['#1C1C1E', '#2C2C2E']}
+                            style={styles.iconGradient}
+                        >
+                            <Check size={48} color="#FFFFFF" strokeWidth={3} />
+                        </LinearGradient>
                     </Animated.View>
 
-                    <Text style={styles.title}>Your Order is on its way to you</Text>
+                    <Animated.View style={{ opacity: fadeAnim, alignItems: 'center' }}>
+                        <Text style={styles.title}>Order Confirmed</Text>
+                        <Text style={styles.subtitle}>
+                            Your luxurious pieces are being prepared and will be delivered by <Text style={styles.highlight}>24 Aug</Text>.
+                        </Text>
+                    </Animated.View>
 
-                    <Text style={styles.description}>
-                        Your Order has been placed successfully and it'll be delivered to you in the next 5 working days
-                    </Text>
-
-                    <View style={styles.buttonContainer}>
+                    <Animated.View style={[styles.buttonContainer, { opacity: fadeAnim }]}>
                         <TouchableOpacity
                             style={styles.trackButton}
                             onPress={() => navigation.navigate('OrderTracking')}
+                            activeOpacity={0.9}
                         >
-                            <Text style={styles.trackButtonText}>Track Now</Text>
+                            <Text style={styles.trackButtonText}>Track Shipment</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                             style={styles.homeButton}
                             onPress={() => navigation.navigate('Home')}
+                            activeOpacity={0.8}
                         >
-                            <Text style={styles.homeButtonText}>Go Back to Home</Text>
+                            <Text style={styles.homeButtonText}>Back to Home</Text>
                         </TouchableOpacity>
-                    </View>
+                    </Animated.View>
                 </View>
             </SafeAreaView>
         </View>
@@ -67,72 +83,78 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 32,
+        paddingHorizontal: 40,
     },
     iconContainer: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        backgroundColor: '#4CD964', // Green success color
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        marginBottom: 40,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 0.15,
+        shadowRadius: 30,
+        elevation: 15,
+    },
+    iconGradient: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 32,
-        shadowColor: "#4CD964",
-        shadowOffset: {
-            width: 0,
-            height: 10,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 15,
-        elevation: 10,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: colors.text,
+        fontSize: 32,
+        fontWeight: '900',
+        color: '#1C1C1E',
         textAlign: 'center',
         marginBottom: 16,
-        lineHeight: 32,
+        letterSpacing: -1,
     },
-    description: {
-        fontSize: 14,
-        color: colors.muted,
+    subtitle: {
+        fontSize: 16,
+        color: '#8E8E93',
         textAlign: 'center',
-        lineHeight: 22,
-        marginBottom: 48,
-        maxWidth: 280,
+        lineHeight: 24,
+        marginBottom: 64,
+        paddingHorizontal: 10,
+    },
+    highlight: {
+        color: '#1C1C1E',
+        fontWeight: '900',
     },
     buttonContainer: {
         width: '100%',
-        gap: 16,
+        gap: 12,
     },
     trackButton: {
-        backgroundColor: colors.primary,
-        height: 56,
-        borderRadius: 28,
+        backgroundColor: '#1C1C1E',
+        height: 64,
+        borderRadius: 32,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 4,
+        shadowColor: '#1C1C1E',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.25,
+        shadowRadius: 15,
+        elevation: 8,
     },
     trackButtonText: {
-        color: colors.white,
+        color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '800',
+        letterSpacing: 0.5,
     },
     homeButton: {
-        height: 56,
-        borderRadius: 28,
+        height: 64,
+        borderRadius: 32,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'transparent',
+        backgroundColor: '#F7F7F7',
     },
     homeButtonText: {
-        color: colors.text,
+        color: '#1C1C1E',
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: '800',
     },
 });
