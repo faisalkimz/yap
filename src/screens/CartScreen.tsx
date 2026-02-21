@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from '../components/Button';
 import {
     StyleSheet,
     Text,
@@ -13,7 +14,7 @@ import {
     Dimensions
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import {
@@ -162,13 +163,11 @@ export const CartScreen: React.FC<Props> = ({ navigation }) => {
 
                 {cartItems.length > 0 && (
                     <View style={styles.fixedBottom}>
-                        <TouchableOpacity
-                            style={styles.checkoutBtn}
+                        <Button
+                            title="PROCEED TO SECURE CHECKOUT"
                             onPress={() => navigation.navigate('Checkout', { total: total.toString() })}
-                        >
-                            <Text style={styles.checkoutText}>PROCEED TO SECURE CHECKOUT</Text>
-                            <MoveRight size={20} color="#FFFFFF" strokeWidth={1} />
-                        </TouchableOpacity>
+                            icon={<MoveRight size={20} color={colors.white} />}
+                        />
                     </View>
                 )}
                 <BottomNav />

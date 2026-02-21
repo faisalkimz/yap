@@ -12,7 +12,7 @@ import {
     FlatList
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { ChevronLeft, SlidersHorizontal, Heart, Star } from 'lucide-react-native';
 import { useFavorites } from '../context/FavoritesContext';
 

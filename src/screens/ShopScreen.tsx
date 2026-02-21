@@ -13,7 +13,7 @@ import {
     FlatList
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { ChevronLeft, Search, SlidersHorizontal, ArrowRight } from 'lucide-react-native';
 import { BottomNav } from '../components/BottomNav';
 

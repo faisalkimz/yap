@@ -43,6 +43,12 @@ import { SupportHubScreen } from '../screens/SupportHubScreen';
 import { StoreLocatorScreen } from '../screens/StoreLocatorScreen';
 import { LegalContentScreen } from '../screens/LegalContentScreen';
 import { ContactUsScreen } from '../screens/ContactUsScreen';
+import { AboutUsScreen } from '../screens/AboutUsScreen';
+import { FAQScreen } from '../screens/FAQScreen';
+import { ReturnsDashboardScreen } from '../screens/ReturnsDashboardScreen';
+import { InvoiceScreen } from '../screens/InvoiceScreen';
+import { MyReviewsScreen } from '../screens/MyReviewsScreen';
+import { CouponsScreen } from '../screens/CouponsScreen';
 
 // Auth Screens
 import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
@@ -53,61 +59,11 @@ import { SocialLoginCallbackScreen } from '../screens/auth/SocialLoginCallbackSc
 import { LogoutConfirmationScreen } from '../screens/auth/LogoutConfirmationScreen';
 
 import { enableScreens } from 'react-native-screens';
+import { MiniCart } from '../components/MiniCart';
 
 enableScreens();
 
-
-export type RootStackParamList = {
-  Splash: undefined;
-  Onboarding: undefined;
-  GetStarted: undefined;
-  SignIn: undefined;
-  Home: undefined;
-  ProductDetails: { product: any, images?: string[] };
-  Cart: undefined;
-  Favorites: undefined;
-  Profile: undefined;
-  Checkout: { total: string };
-  OrderSuccess: undefined;
-  OrderTracking: undefined;
-  EditProfile: undefined;
-  Orders: undefined;
-  PaymentMethods: undefined;
-  Address: undefined;
-  Settings: undefined;
-  Support: undefined;
-  ChangePassword: undefined;
-  Shop: undefined;
-  CategoryListing: undefined;
-  SubCategory: { categoryId: string, categoryName: string };
-  Brand: { brandId: string, brandName: string };
-  SearchResults: { query: string };
-  Filters: undefined;
-  OtpVerification: undefined;
-  EmailVerification: undefined;
-  ForgotPassword: undefined;
-  ResetPassword: undefined;
-  SocialLoginCallback: undefined;
-  LogoutConfirmation: undefined;
-  OrderDetails: undefined;
-  AddEditAddress: { addressId?: string; initialData?: any };
-  Notifications: undefined;
-  Wallet: undefined;
-  ShoppingExtras: { initialTab?: string };
-  PaymentFailed: undefined;
-  PaymentGateway: undefined;
-  ProductReviews: undefined;
-  WriteReview: undefined;
-  CompareProducts: undefined;
-  PromotionalListing: { collectionType: 'Flash Sale' | 'Best Sellers' | 'New Arrivals' | 'Deal of the Day' };
-  SupportHub: undefined;
-  Blog: undefined;
-  StoreLocator: undefined;
-  LegalContent: { type: 'privacy' | 'terms' | 'returns' | 'refunds' | 'shipping' };
-  ContactUs: undefined;
-};
-
-
+import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -170,6 +126,12 @@ export const AppNavigator = () => {
         <Stack.Screen name="StoreLocator" component={StoreLocatorScreen} />
         <Stack.Screen name="LegalContent" component={LegalContentScreen} />
         <Stack.Screen name="ContactUs" component={ContactUsScreen} />
+        <Stack.Screen name="AboutUs" component={AboutUsScreen} />
+        <Stack.Screen name="FAQ" component={FAQScreen} />
+        <Stack.Screen name="ReturnsDashboard" component={ReturnsDashboardScreen} />
+        <Stack.Screen name="Invoice" component={InvoiceScreen} />
+        <Stack.Screen name="MyReviews" component={MyReviewsScreen} />
+        <Stack.Screen name="Coupons" component={CouponsScreen} />
 
         {/* Auth Workflows */}
         <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />
@@ -179,9 +141,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="SocialLoginCallback" component={SocialLoginCallbackScreen} />
         <Stack.Screen name="LogoutConfirmation" component={LogoutConfirmationScreen} options={{ presentation: 'transparentModal', animation: 'fade' }} />
       </Stack.Navigator>
-
-
+      <MiniCart />
     </NavigationContainer>
   );
 };
-

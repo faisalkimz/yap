@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, Platform, StatusBar } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { BottomNav } from '../components/BottomNav';
 import {
     Settings,
@@ -22,7 +22,8 @@ import {
     Bell,
     BookOpen,
     Store,
-    MoveRight
+    MoveRight,
+    RotateCcw
 } from 'lucide-react-native';
 
 import { colors } from '../theme/colors';
@@ -116,20 +117,36 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.curatedSection}>
                         <Text style={styles.sectionHeading}>Curated for you</Text>
 
-                        <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('StoreLocator')}>
+                        <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('ReturnsDashboard')}>
                             <View style={styles.curatedLeft}>
-                                <Store size={20} color="#1C1C1E" />
-                                <Text style={styles.curatedLabel}>Find a Boutique</Text>
+                                <RotateCcw size={20} color={colors.secondary} />
+                                <Text style={styles.curatedLabel}>Returns & Exchanges</Text>
                             </View>
-                            <MoveRight size={20} color="#1C1C1E" />
+                            <MoveRight size={20} color={colors.secondary} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('MyReviews')}>
+                            <View style={styles.curatedLeft}>
+                                <Star size={20} color={colors.secondary} />
+                                <Text style={styles.curatedLabel}>My Product Reviews</Text>
+                            </View>
+                            <MoveRight size={20} color={colors.secondary} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('Coupons')}>
+                            <View style={styles.curatedLeft}>
+                                <Ticket size={20} color={colors.secondary} />
+                                <Text style={styles.curatedLabel}>Exclusive Coupons</Text>
+                            </View>
+                            <MoveRight size={20} color={colors.secondary} />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('Favorites')}>
                             <View style={styles.curatedLeft}>
-                                <Heart size={20} color="#1C1C1E" />
+                                <Heart size={20} color={colors.secondary} />
                                 <Text style={styles.curatedLabel}>The Collection (Wishlist)</Text>
                             </View>
-                            <MoveRight size={20} color="#1C1C1E" />
+                            <MoveRight size={20} color={colors.secondary} />
                         </TouchableOpacity>
                     </View>
 
@@ -139,9 +156,9 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                             <Settings size={18} color="#8E8E93" />
                             <Text style={styles.settingText}>Preference Settings</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.settingBtn} onPress={() => navigation.navigate('SupportHub')}>
+                        <TouchableOpacity style={styles.settingBtn} onPress={() => navigation.navigate('FAQ')}>
                             <HelpCircle size={18} color="#8E8E93" />
-                            <Text style={styles.settingText}>Assistance & Policies</Text>
+                            <Text style={styles.settingText}>Assistance & FAQ</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -190,12 +207,10 @@ const styles = StyleSheet.create({
     cardLabels: {},
     cardMain: { fontSize: 16, fontWeight: '900', color: colors.secondary },
     cardSub: { fontSize: 11, fontWeight: '800', color: colors.muted, textTransform: 'uppercase', marginTop: 2 },
-    // Adjust colors for large card
-    gridCardLarge_icon: { color: colors.white },
 
     curatedSection: { marginTop: 48, paddingHorizontal: 24 },
     sectionHeading: { fontSize: 12, fontWeight: '900', color: colors.muted, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 24 },
-    curatedLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 20, borderBottomWidth: 1, borderBottomColor: colors.lightGray },
+    curatedLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.lightGray },
     curatedLeft: { flexDirection: 'row', alignItems: 'center', gap: 16 },
     curatedLabel: { fontSize: 17, fontWeight: '700', color: colors.secondary },
 

@@ -11,7 +11,7 @@ import {
     Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import {
     ChevronLeft,
     Download,
@@ -66,7 +66,7 @@ export const OrderDetailScreen: React.FC<Props> = ({ navigation, route }) => {
                         <ChevronLeft size={24} color="#1C1C1E" strokeWidth={2.5} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Order Details</Text>
-                    <TouchableOpacity style={styles.invoiceButton}>
+                    <TouchableOpacity style={styles.invoiceButton} onPress={() => navigation.navigate('Invoice')}>
                         <Download size={20} color="#1C1C1E" strokeWidth={2.5} />
                     </TouchableOpacity>
                 </View>
@@ -151,7 +151,7 @@ export const OrderDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
                     {/* Actions */}
                     <View style={styles.actionSection}>
-                        <TouchableOpacity style={styles.returnButton}>
+                        <TouchableOpacity style={styles.returnButton} onPress={() => navigation.navigate('ReturnsDashboard')}>
                             <RefreshCcw size={20} color="#1C1C1E" strokeWidth={2.5} style={{ marginRight: 10 }} />
                             <Text style={styles.returnButtonText}>Return or Replace Items</Text>
                         </TouchableOpacity>

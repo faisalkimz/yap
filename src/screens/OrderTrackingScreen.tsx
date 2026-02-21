@@ -12,7 +12,7 @@ import {
     StatusBar,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { ChevronLeft, Check, MapPin, Package, Truck, Home as HomeIcon, CheckCheck } from 'lucide-react-native';
 import { BottomNav } from '../components/BottomNav';
 

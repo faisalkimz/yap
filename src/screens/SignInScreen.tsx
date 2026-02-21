@@ -12,7 +12,7 @@ import {
     Image,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { Mail, Lock, ChevronLeft, Github, Eye, EyeOff } from 'lucide-react-native';
@@ -113,6 +113,14 @@ export const SignInScreen: React.FC<Props> = ({ navigation }) => {
                                 <Text style={styles.dividerText}>Or continue with</Text>
                                 <View style={styles.line} />
                             </View>
+
+                            <TouchableOpacity
+                                style={styles.guestButton}
+                                onPress={() => navigation.replace('Home')}
+                                activeOpacity={0.7}
+                            >
+                                <Text style={styles.guestButtonText}>CONTINUE AS GUEST</Text>
+                            </TouchableOpacity>
 
                             <View style={styles.socialButtons}>
                                 <TouchableOpacity style={styles.socialButton} activeOpacity={0.8} onPress={() => navigation.navigate('SocialLoginCallback')}>
@@ -258,15 +266,20 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     guestButton: {
-        height: 64,
+        height: 60,
+        backgroundColor: colors.white,
+        borderRadius: 2,
+        borderWidth: 1.5,
+        borderColor: colors.secondary,
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 12,
+        marginBottom: 24,
     },
     guestButtonText: {
-        color: '#8E8E93',
-        fontSize: 15,
-        fontWeight: '700',
+        color: colors.secondary,
+        fontSize: 13,
+        fontWeight: '900',
+        letterSpacing: 2,
     },
     divider: {
         flexDirection: 'row',

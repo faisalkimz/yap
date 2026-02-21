@@ -13,7 +13,7 @@ import {
     Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/AppNavigator';
+import { RootStackParamList } from '../navigation/types';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import {
@@ -31,6 +31,8 @@ import {
 } from 'lucide-react-native';
 import { BottomNav } from '../components/BottomNav';
 import { useFavorites } from '../context/FavoritesContext';
+import { useCart } from '../context/CartContext';
+import { Button } from '../components/Button';
 
 const { width } = Dimensions.get('window');
 const PRODUCT_CARD_WIDTH = (width - 60) / 2;
@@ -87,6 +89,7 @@ const FEATURED_PRODUCTS = [
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const { isFavorite, toggleFavorite } = useFavorites();
+    const { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed } = useCart();
     const [activeCategory, setActiveCategory] = useState('1');
 
     const renderProduct = (product: typeof FEATURED_PRODUCTS[0], index: number) => (
@@ -94,7 +97,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             key={product.id}
             style={[styles.productCard, index % 2 === 0 ? { marginLeft: 24 } : { marginRight: 24 }]}
             activeOpacity={0.9}
-            onPress={() => navigation.navigate('ProductDetails', { product: product as any })}
+            onPress={() => {
+                navigation.navigate('ProductDetails', { product: product as any });
+                addToRecentlyViewed(product as any);
+            }}
         >
             <View style={styles.imageBox}>
                 <Image source={{ uri: product.image }} style={styles.productImg} />
@@ -121,6 +127,18 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     <Plus size={16} color={colors.secondary} />
                 </TouchableOpacity>
             </View>
+        </TouchableOpacity>
+    );
+
+    const renderRecentItem = (product: any) => (
+        <TouchableOpacity
+            key={product.id}
+            style={styles.recentItem}
+            onPress={() => navigation.navigate('ProductDetails', { product })}
+        >
+            <Image source={{ uri: product.image }} style={styles.recentImg} />
+            <Text style={styles.recentName} numberOfLines={1}>{product.name}</Text>
+            <Text style={styles.recentPrice}>{product.price}</Text>
         </TouchableOpacity>
     );
 
@@ -198,9 +216,13 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                             </View>
                             <Text style={styles.promoTitle}>Winter Sale</Text>
                             <Text style={styles.promoSub}>Access up to 40% privilege on select pieces.</Text>
-                            <TouchableOpacity style={styles.promoBtn}>
-                                <Text style={styles.promoBtnText}>Shop Collection</Text>
-                            </TouchableOpacity>
+                            <Button
+                                title="Shop Collection"
+                                onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Flash Sale' })}
+                                variant="outline"
+                                style={styles.promoBtn}
+                                textStyle={styles.promoBtnText}
+                            />
                         </View>
                     </TouchableOpacity>
 
@@ -235,6 +257,20 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.productGrid}>
                         {FEATURED_PRODUCTS.map((p, idx) => renderProduct(p, idx))}
                     </View>
+
+                    {recentlyViewed.length > 0 && (
+                        <View style={styles.recentSection}>
+                            <View style={styles.sectionHeader}>
+                                <Text style={styles.sectionTitle}>RECENTLY VIEWED</Text>
+                                <TouchableOpacity onPress={() => clearRecentlyViewed()}>
+                                    <Text style={styles.seeAll}>CLEAR</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recentScroll}>
+                                {recentlyViewed.map(renderRecentItem)}
+                            </ScrollView>
+                        </View>
+                    )}
 
                     <View style={{ height: 120 }} />
                 </ScrollView>
@@ -300,5 +336,12 @@ const styles = StyleSheet.create({
     cardName: { fontSize: 15, fontWeight: '700', color: colors.secondary, marginBottom: 8 },
     cardPriceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
     cardPrice: { fontSize: 15, fontWeight: '900', color: colors.secondary },
-    addGhost: { padding: 4 }
+    addGhost: { padding: 4 },
+
+    recentSection: { marginTop: 40 },
+    recentScroll: { paddingHorizontal: 24, gap: 16 },
+    recentItem: { width: 140, marginBottom: 20 },
+    recentImg: { width: 140, height: 180, borderRadius: 2, backgroundColor: colors.lightGray, marginBottom: 12 },
+    recentName: { fontSize: 13, fontWeight: '700', color: colors.secondary, marginBottom: 4 },
+    recentPrice: { fontSize: 13, fontWeight: '900', color: colors.secondary }
 });
