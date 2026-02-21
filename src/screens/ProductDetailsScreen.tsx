@@ -17,7 +17,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
-import { ChevronLeft, Heart, ShoppingCart, Star, Minus, Plus } from 'lucide-react-native';
+import { ChevronLeft, Heart, ShoppingCart, Star, Minus, Plus, GitCompare } from 'lucide-react-native';
 import { useFavorites } from '../context/FavoritesContext';
 
 const { width, height } = Dimensions.get('window');
@@ -107,10 +107,13 @@ export const ProductDetailsScreen: React.FC<Props> = ({ navigation, route }) => 
                     <View style={styles.titleSection}>
                         <View style={styles.titleHeader}>
                             <Text style={styles.categoryBadge}>{product.category ? product.category.toUpperCase() : 'PREMIUM'}</Text>
-                            <View style={styles.ratingRow}>
+                            <TouchableOpacity
+                                style={styles.ratingRow}
+                                onPress={() => navigation.navigate('ProductReviews')}
+                            >
                                 <Star size={14} color="#FFD700" fill="#FFD700" />
                                 <Text style={styles.ratingText}>{product.rating} (128 Reviews)</Text>
-                            </View>
+                            </TouchableOpacity>
                         </View>
 
                         <Text style={styles.productName}>{product.name}</Text>
@@ -119,6 +122,14 @@ export const ProductDetailsScreen: React.FC<Props> = ({ navigation, route }) => 
                         <Text style={styles.description}>
                             Engineered for perfection, this piece fuses contemporary aesthetics with uncompromising comfort. Crafted from premium, sustainably sourced fibers for a luxurious feel that transcends seasons.
                         </Text>
+
+                        <TouchableOpacity
+                            style={styles.compareBtn}
+                            onPress={() => navigation.navigate('CompareProducts')}
+                        >
+                            <GitCompare size={18} color="#1C1C1E" style={{ marginRight: 8 }} />
+                            <Text style={styles.compareBtnText}>Compare with other items</Text>
+                        </TouchableOpacity>
                     </View>
 
                     {/* Configurations: Size & Color */}
@@ -473,5 +484,20 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: '800',
         letterSpacing: 0.5,
+    },
+    compareBtn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        backgroundColor: '#F8F8F8',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderRadius: 12,
+        alignSelf: 'flex-start',
+    },
+    compareBtnText: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1C1C1E',
     },
 });

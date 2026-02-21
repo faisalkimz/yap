@@ -24,7 +24,13 @@ import {
     SlidersHorizontal,
     Shirt,
     Footprints,
-    Star
+    Star,
+    TrendingUp,
+    Zap,
+    Sparkles,
+    Eye,
+    Clock,
+    Flame
 } from 'lucide-react-native';
 import { BottomNav } from '../components/BottomNav';
 import { useFavorites } from '../context/FavoritesContext';
@@ -191,7 +197,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         decelerationRate="fast"
                     >
                         {/* Banner 1 */}
-                        <TouchableOpacity style={[styles.bannerContainer, { backgroundColor: '#1C1C1E' }]} activeOpacity={0.9}>
+                        <TouchableOpacity
+                            style={[styles.bannerContainer, { backgroundColor: '#1C1C1E' }]}
+                            activeOpacity={0.9}
+                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'New Arrivals' })}
+                        >
                             <View style={styles.bannerTextContainer}>
                                 <Text style={styles.newCollectionText}>NEW DROPS</Text>
                                 <Text style={styles.discountText}>Winter{'\n'}Collection</Text>
@@ -206,7 +216,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         </TouchableOpacity>
 
                         {/* Banner 2 */}
-                        <TouchableOpacity style={[styles.bannerContainer, { backgroundColor: '#FF6B4A' }]} activeOpacity={0.9}>
+                        <TouchableOpacity
+                            style={[styles.bannerContainer, { backgroundColor: '#FF6B4A' }]}
+                            activeOpacity={0.9}
+                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Flash Sale' })}
+                        >
                             <View style={styles.bannerTextContainer}>
                                 <Text style={styles.newCollectionText}>FLASH SALE</Text>
                                 <Text style={styles.discountText}>Up to 50%{'\n'}Off Today</Text>
@@ -232,8 +246,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
                     {/* Recommended */}
                     <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Just For You</Text>
-                        <TouchableOpacity>
+                        <View style={styles.titleWithIcon}>
+                            <Sparkles size={20} color="#1C1C1E" style={{ marginRight: 8 }} />
+                            <Text style={styles.sectionTitle}>Just For You</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'New Arrivals' })}>
                             <Text style={styles.seeAllText}>Browse all</Text>
                         </TouchableOpacity>
                     </View>
@@ -247,6 +264,51 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                             keyExtractor={item => item.id}
                             columnWrapperStyle={{ justifyContent: 'space-between' }}
                         />
+                    </View>
+
+                    {/* Recently Viewed */}
+                    <View style={[styles.sectionHeader, { marginTop: 40 }]}>
+                        <View style={styles.titleWithIcon}>
+                            <Clock size={20} color="#1C1C1E" style={{ marginRight: 8 }} />
+                            <Text style={styles.sectionTitle}>Continue Browsing</Text>
+                        </View>
+                    </View>
+
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.horizontalList}
+                    >
+                        {PRODUCTS.slice(0, 3).map((item) => (
+                            <TouchableOpacity
+                                key={item.id}
+                                style={styles.recentItem}
+                                onPress={() => navigation.navigate('ProductDetails', { product: item })}
+                            >
+                                <Image source={{ uri: item.image }} style={styles.recentImage} />
+                                <Text style={styles.recentName} numberOfLines={1}>{item.name}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+
+                    {/* Marketing Triggers */}
+                    <View style={styles.discoveryGrid}>
+                        <TouchableOpacity
+                            style={[styles.discoveryCard, { backgroundColor: '#F0F9F4' }]}
+                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Best Sellers' })}
+                        >
+                            <TrendingUp size={24} color="#34C759" />
+                            <Text style={styles.discoveryTitle}>Best Sellers</Text>
+                            <Text style={styles.discoverySubtitle}>Most loved pieces</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.discoveryCard, { backgroundColor: '#FFF5F2' }]}
+                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Deal of the Day' })}
+                        >
+                            <Flame size={24} color="#FF6B4A" />
+                            <Text style={styles.discoveryTitle}>Daily Deals</Text>
+                            <Text style={styles.discoverySubtitle}>24h limited offers</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
 
@@ -562,5 +624,53 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '800',
         color: '#FF6B4A',
+    },
+    titleWithIcon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    horizontalList: {
+        paddingHorizontal: 24,
+        gap: 16,
+        marginBottom: 32,
+    },
+    recentItem: {
+        width: 140,
+    },
+    recentImage: {
+        width: 140,
+        height: 180,
+        borderRadius: 20,
+        backgroundColor: '#F5F5F5',
+        marginBottom: 10,
+    },
+    recentName: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#1C1C1E',
+        paddingHorizontal: 4,
+    },
+    discoveryGrid: {
+        flexDirection: 'row',
+        paddingHorizontal: 24,
+        gap: 16,
+        marginTop: 16,
+    },
+    discoveryCard: {
+        flex: 1,
+        padding: 20,
+        borderRadius: 24,
+        gap: 8,
+    },
+    discoveryTitle: {
+        fontSize: 16,
+        fontWeight: '900',
+        color: '#1C1C1E',
+        marginTop: 4,
+    },
+    discoverySubtitle: {
+        fontSize: 12,
+        color: '#8E8E93',
+        fontWeight: '600',
     },
 });

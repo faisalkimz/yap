@@ -35,6 +35,10 @@ import { WalletScreen } from '../screens/WalletScreen';
 import { ShoppingExtrasScreen } from '../screens/ShoppingExtrasScreen';
 import { PaymentFailedScreen } from '../screens/PaymentFailedScreen';
 import { PaymentGatewayScreen } from '../screens/PaymentGatewayScreen';
+import { ProductReviewsScreen } from '../screens/ProductReviewsScreen';
+import { WriteReviewScreen } from '../screens/WriteReviewScreen';
+import { CompareProductsScreen } from '../screens/CompareProductsScreen';
+import { PromotionalListingScreen } from '../screens/PromotionalListingScreen';
 
 // Auth Screens
 import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
@@ -88,6 +92,10 @@ export type RootStackParamList = {
   ShoppingExtras: { initialTab?: string };
   PaymentFailed: undefined;
   PaymentGateway: undefined;
+  ProductReviews: undefined;
+  WriteReview: undefined;
+  CompareProducts: undefined;
+  PromotionalListing: { collectionType: 'Flash Sale' | 'Best Sellers' | 'New Arrivals' | 'Deal of the Day' };
 };
 
 
@@ -141,6 +149,12 @@ export const AppNavigator = () => {
         <Stack.Screen name="ShoppingExtras" component={ShoppingExtrasScreen} />
         <Stack.Screen name="PaymentFailed" component={PaymentFailedScreen} />
         <Stack.Screen name="PaymentGateway" component={PaymentGatewayScreen} />
+
+        {/* Engagement & Promotional Screens */}
+        <Stack.Screen name="ProductReviews" component={ProductReviewsScreen} />
+        <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
+        <Stack.Screen name="CompareProducts" component={CompareProductsScreen} />
+        <Stack.Screen name="PromotionalListing" component={PromotionalListingScreen} />
 
         {/* Auth Workflows */}
         <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />
