@@ -25,9 +25,16 @@ import {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddEditAddress'>;
 
-export const AddEditAddressScreen: React.FC<Props> = ({ navigation }) => {
-    const [isDefault, setIsDefault] = useState(false);
-    const [addressType, setAddressType] = useState('Home');
+export const AddEditAddressScreen: React.FC<Props> = ({ navigation, route }) => {
+    const editData = route.params?.initialData;
+    const isEdit = !!editData;
+
+    const [isDefault, setIsDefault] = useState(editData?.isDefault || false);
+    const [addressType, setAddressType] = useState(editData?.label || 'Home');
+    const [name, setName] = useState(editData?.name || '');
+    const [phone, setPhone] = useState(editData?.phone || '');
+    const [city, setCity] = useState(editData?.city || '');
+    const [street, setStreet] = useState(editData?.address || '');
 
     return (
         <View style={styles.container}>
@@ -37,13 +44,13 @@ export const AddEditAddressScreen: React.FC<Props> = ({ navigation }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                         <ChevronLeft size={24} color="#1C1C1E" strokeWidth={2.5} />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>New Address</Text>
+                    <Text style={styles.headerTitle}>{isEdit ? 'Edit Residence' : 'New Residence'}</Text>
                     <View style={{ width: 48 }} />
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
                     {/* Address Type Selector */}
-                    <Text style={styles.sectionTitle}>Address Label</Text>
+                    <Text style={styles.sectionTitle}>Residence Type</Text>
                     <View style={styles.typeSelector}>
                         {['Home', 'Office', 'Other'].map((type) => (
                             <TouchableOpacity
@@ -61,19 +68,17 @@ export const AddEditAddressScreen: React.FC<Props> = ({ navigation }) => {
 
                     {/* Form */}
                     <View style={styles.form}>
-                        <InputField label="Receiver Name" icon={User} placeholder="Full Name" />
-                        <InputField label="Phone Number" icon={Phone} placeholder="+44 7890 000000" keyboardType="phone-pad" />
-                        <InputField label="Country" icon={Globe} placeholder="United Kingdom" />
-                        <InputField label="City" icon={MapPin} placeholder="London" />
-                        <InputField label="Street Address" icon={MapPin} placeholder="Building, Street, Area" multiline />
-                        <InputField label="Postal Code" icon={MapPin} placeholder="SW1A 1AA" />
+                        <InputField label="Resident / Receiver" icon={User} placeholder="Full Name" value={name} onChangeText={setName} />
+                        <InputField label="Direct Contact" icon={Phone} placeholder="+44 7890 000000" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
+                        <InputField label="City / Region" icon={MapPin} placeholder="London" value={city} onChangeText={setCity} />
+                        <InputField label="Street Address" icon={MapPin} placeholder="Building, Street, Area" multiline value={street} onChangeText={setStreet} />
                     </View>
 
                     {/* Default Toggle */}
                     <View style={styles.defaultSection}>
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.defaultTitle}>Set as Default Address</Text>
-                            <Text style={styles.defaultSub}>Use this address for all future checkouts.</Text>
+                            <Text style={styles.defaultTitle}>Primary Residence</Text>
+                            <Text style={styles.defaultSub}>Use this as the priority for all orders.</Text>
                         </View>
                         <Switch
                             value={isDefault}
@@ -88,7 +93,7 @@ export const AddEditAddressScreen: React.FC<Props> = ({ navigation }) => {
                         style={styles.saveBtn}
                         onPress={() => navigation.goBack()}
                     >
-                        <Text style={styles.saveBtnText}>Save Address</Text>
+                        <Text style={styles.saveBtnText}>{isEdit ? 'Update Details' : 'Save Residence'}</Text>
                     </TouchableOpacity>
 
                 </ScrollView>

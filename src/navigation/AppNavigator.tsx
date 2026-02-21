@@ -39,6 +39,10 @@ import { ProductReviewsScreen } from '../screens/ProductReviewsScreen';
 import { WriteReviewScreen } from '../screens/WriteReviewScreen';
 import { CompareProductsScreen } from '../screens/CompareProductsScreen';
 import { PromotionalListingScreen } from '../screens/PromotionalListingScreen';
+import { SupportHubScreen } from '../screens/SupportHubScreen';
+import { StoreLocatorScreen } from '../screens/StoreLocatorScreen';
+import { LegalContentScreen } from '../screens/LegalContentScreen';
+import { ContactUsScreen } from '../screens/ContactUsScreen';
 
 // Auth Screens
 import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
@@ -86,7 +90,7 @@ export type RootStackParamList = {
   SocialLoginCallback: undefined;
   LogoutConfirmation: undefined;
   OrderDetails: undefined;
-  AddEditAddress: undefined;
+  AddEditAddress: { addressId?: string; initialData?: any };
   Notifications: undefined;
   Wallet: undefined;
   ShoppingExtras: { initialTab?: string };
@@ -96,6 +100,11 @@ export type RootStackParamList = {
   WriteReview: undefined;
   CompareProducts: undefined;
   PromotionalListing: { collectionType: 'Flash Sale' | 'Best Sellers' | 'New Arrivals' | 'Deal of the Day' };
+  SupportHub: undefined;
+  Blog: undefined;
+  StoreLocator: undefined;
+  LegalContent: { type: 'privacy' | 'terms' | 'returns' | 'refunds' | 'shipping' };
+  ContactUs: undefined;
 };
 
 
@@ -155,6 +164,12 @@ export const AppNavigator = () => {
         <Stack.Screen name="WriteReview" component={WriteReviewScreen} />
         <Stack.Screen name="CompareProducts" component={CompareProductsScreen} />
         <Stack.Screen name="PromotionalListing" component={PromotionalListingScreen} />
+
+        {/* Support & Information Screens */}
+        <Stack.Screen name="SupportHub" component={SupportHubScreen} />
+        <Stack.Screen name="StoreLocator" component={StoreLocatorScreen} />
+        <Stack.Screen name="LegalContent" component={LegalContentScreen} />
+        <Stack.Screen name="ContactUs" component={ContactUsScreen} />
 
         {/* Auth Workflows */}
         <Stack.Screen name="OtpVerification" component={OtpVerificationScreen} />

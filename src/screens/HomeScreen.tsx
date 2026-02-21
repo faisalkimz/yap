@@ -6,10 +6,10 @@ import {
     ScrollView,
     Image,
     TouchableOpacity,
-    FlatList,
     Dimensions,
     StatusBar,
     SafeAreaView,
+    TextInput,
     Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -19,658 +19,286 @@ import { typography } from '../theme/typography';
 import {
     Search,
     Bell,
-    ShoppingBag,
     Heart,
     SlidersHorizontal,
-    Shirt,
-    Footprints,
+    MoveRight,
     Star,
-    TrendingUp,
+    Plus,
+    Flame,
     Zap,
-    Sparkles,
-    Eye,
-    Clock,
-    Flame
+    Crown,
+    ShoppingBag
 } from 'lucide-react-native';
 import { BottomNav } from '../components/BottomNav';
 import { useFavorites } from '../context/FavoritesContext';
 
 const { width } = Dimensions.get('window');
+const PRODUCT_CARD_WIDTH = (width - 60) / 2;
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const CATEGORIES = [
-    { id: 'all', name: 'All Items', icon: ShoppingBag },
-    { id: 'clothes', name: 'Clothes', icon: Shirt },
-    { id: 'shoes', name: 'Shoes', icon: Footprints },
+    { id: '1', name: 'Apparel', icon: '👕' },
+    { id: '2', name: 'Footwear', icon: '👟' },
+    { id: '3', name: 'Timepieces', icon: '⌚' },
+    { id: '4', name: 'Accessories', icon: '👜' },
+    { id: '5', name: 'Gifts', icon: '🎁' },
 ];
 
-const PRODUCTS = [
+const COLLECTIONS = [
+    { id: '1', name: 'Winter Archive', label: 'NEW SEASON', image: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=800&q=80' },
+    { id: '2', name: 'Tailored Suiting', label: 'SIGNATURES', image: 'https://images.unsplash.com/photo-1594932224528-a4603e236124?w=800&q=80' },
+];
+
+const FEATURED_PRODUCTS = [
     {
         id: '1',
-        name: 'Oversized Cotton T-Shirt',
-        price: 'GX 45,000.00',
-        rating: '4.8',
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80',
-        images: [
-            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80',
-            'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&q=80',
-            'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=500&q=80',
-        ],
-        category: 'Men'
+        name: 'Velvet Evening Blazer',
+        price: '£420.00',
+        rating: '4.9',
+        image: 'https://images.unsplash.com/photo-1594932224528-a4603e236124?w=800&q=80',
+        category: 'Formal'
     },
     {
         id: '2',
-        name: 'Classic Denim Jacket',
-        price: 'GX 120,000.00',
-        rating: '4.9',
-        image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80',
-        images: [
-            'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80',
-            'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=500&q=80',
-            'https://images.unsplash.com/photo-1544441893-675973e31985?w=500&q=80',
-        ],
-        category: 'Women'
+        name: 'Obsidian Leather boots',
+        price: '£310.00',
+        rating: '4.8',
+        image: 'https://images.unsplash.com/photo-1638247025967-b4e38f6893b4?w=800&q=80',
+        category: 'Footwear'
     },
     {
-        id: '3',
-        name: 'Casual Linen Pants',
-        price: 'GX 55,000.00',
-        rating: '4.5',
-        image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500&q=80',
-        images: [
-            'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=500&q=80',
-            'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500&q=80',
-            'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&q=80',
-        ],
-        category: 'Men'
-    },
-    {
-        id: '4',
-        name: 'Abstract Print Shirt',
-        price: 'GX 65,000.00',
+        id: '101',
+        name: 'Mulberry Silk Shirt',
+        price: '£215.00',
         rating: '4.7',
-        image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80',
-        images: [
-            'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80',
-            'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=500&q=80',
-            'https://images.unsplash.com/photo-1563630423918-b58f07336ac9?w=500&q=80',
-        ],
-        category: 'Men'
+        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80',
+        category: 'Heritage'
     },
+    {
+        id: '102',
+        name: 'Technical Trench',
+        price: '£890.00',
+        rating: '5.0',
+        image: 'https://images.unsplash.com/photo-1539533397341-3927b4c74bb6?w=800&q=80',
+        category: 'Winter'
+    }
 ];
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
-    const [activeCategory, setActiveCategory] = useState('All Items');
     const { isFavorite, toggleFavorite } = useFavorites();
+    const [activeCategory, setActiveCategory] = useState('1');
 
-    const renderCategory = ({ item }: { item: typeof CATEGORIES[0] }) => {
-        const Icon = item.icon;
-        const isActive = activeCategory === item.name;
-        return (
-            <TouchableOpacity
-                style={[styles.categoryChip, isActive && styles.categoryChipActive]}
-                onPress={() => setActiveCategory(item.name)}
-                activeOpacity={0.8}
-            >
-                <View style={[styles.categoryIconCircle, isActive && { backgroundColor: '#FFFFFF' }]}>
-                    <Icon size={16} color={isActive ? '#1C1C1E' : colors.text} strokeWidth={2.5} />
+    const renderProduct = (product: typeof FEATURED_PRODUCTS[0], index: number) => (
+        <TouchableOpacity
+            key={product.id}
+            style={[styles.productCard, index % 2 === 0 ? { marginLeft: 24 } : { marginRight: 24 }]}
+            activeOpacity={0.9}
+            onPress={() => navigation.navigate('ProductDetails', { product: product as any })}
+        >
+            <View style={styles.imageBox}>
+                <Image source={{ uri: product.image }} style={styles.productImg} />
+                <TouchableOpacity
+                    style={styles.cardFav}
+                    onPress={() => toggleFavorite(product as any)}
+                >
+                    <Heart
+                        size={18}
+                        color={isFavorite(product.id) ? colors.accent : colors.secondary}
+                        fill={isFavorite(product.id) ? colors.accent : 'transparent'}
+                    />
+                </TouchableOpacity>
+                <View style={styles.ratingBadge}>
+                    <Star size={10} color="#FFCC00" fill="#FFCC00" />
+                    <Text style={styles.ratingVal}>{product.rating}</Text>
                 </View>
-                <Text style={[styles.categoryText, isActive && styles.categoryTextActive]}>
-                    {item.name}
-                </Text>
-            </TouchableOpacity>
-        );
-    };
-
-    const renderProduct = ({ item, index }: { item: typeof PRODUCTS[0], index: number }) => {
-        const favorited = isFavorite(item.id);
-        const isLeft = index % 2 === 0;
-
-        return (
-            <TouchableOpacity
-                style={[styles.productCard, isLeft ? { marginRight: 8 } : { marginLeft: 8 }]}
-                onPress={() => navigation.navigate('ProductDetails', { product: item })}
-                activeOpacity={0.9}
-            >
-                <View style={styles.imageContainer}>
-                    <Image source={{ uri: item.image }} style={styles.productImage} />
-                    <LinearGradientOverlay />
-                    <TouchableOpacity
-                        style={[styles.favoriteButton, favorited && styles.favoriteButtonActive]}
-                        onPress={() => toggleFavorite(item as any)}
-                        activeOpacity={0.8}
-                    >
-                        <Heart size={18} color={favorited ? colors.white : '#1C1C1E'} fill={favorited ? colors.white : 'transparent'} />
-                    </TouchableOpacity>
-                    <View style={styles.ratingBadge}>
-                        <Star size={12} color="#FFD700" fill="#FFD700" />
-                        <Text style={styles.ratingText}>{item.rating}</Text>
-                    </View>
-                </View>
-                <View style={styles.productInfo}>
-                    <Text style={styles.productName} numberOfLines={1}>{item.name}</Text>
-                    <Text style={styles.productPrice}>{item.price}</Text>
-                </View>
-            </TouchableOpacity>
-        );
-    };
+            </View>
+            <Text style={styles.cardCat}>{product.category}</Text>
+            <Text style={styles.cardName} numberOfLines={1}>{product.name}</Text>
+            <View style={styles.cardPriceRow}>
+                <Text style={styles.cardPrice}>{product.price}</Text>
+                <TouchableOpacity style={styles.addGhost}>
+                    <Plus size={16} color={colors.secondary} />
+                </TouchableOpacity>
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+            <StatusBar barStyle="dark-content" />
             <SafeAreaView style={styles.safeArea}>
+                {/* Ecommerce Header */}
                 <View style={styles.header}>
-                    <View style={styles.userInfo}>
-                        <Image
-                            source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&q=80' }}
-                            style={styles.avatar}
-                        />
-                        <View>
-                            <Text style={styles.subGreeting}>Good morning, </Text>
-                            <Text style={styles.greetingText}>Faisal Kimz</Text>
+                    <View style={styles.brandBox}>
+                        <Text style={styles.brandTitle}>YAP</Text>
+                    </View>
+                    <View style={styles.headerActions}>
+                        <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.navigate('SearchResults', { query: '' })}>
+                            <Search size={20} color={colors.secondary} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.iconCircle}>
+                            <Bell size={20} color={colors.secondary} />
+                            <View style={styles.notifDot} />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.navigate('Cart')}>
+                            <ShoppingBag size={20} color={colors.secondary} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+
+                    {/* Search Bar - Permanent */}
+                    <View style={styles.searchSection}>
+                        <View style={styles.searchBar}>
+                            <Search size={18} color={colors.muted} />
+                            <TextInput
+                                placeholder="Search our catalog of curated attire..."
+                                placeholderTextColor="#A0A0A0"
+                                style={styles.searchInput}
+                            />
+                            <TouchableOpacity style={styles.filterBtn}>
+                                <SlidersHorizontal size={18} color={colors.secondary} strokeWidth={2} />
+                            </TouchableOpacity>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.notificationButton} activeOpacity={0.8}>
-                        <Bell size={22} color="#1C1C1E" />
-                        <View style={styles.badge} />
-                    </TouchableOpacity>
-                </View>
 
-                <View style={styles.searchContainer}>
-                    <View style={styles.searchBar}>
-                        <Search size={22} color="#A0A0A0" style={{ marginRight: 12 }} />
-                        <Text style={styles.placeholderText}>Find your style...</Text>
-                    </View>
-                    <TouchableOpacity style={styles.filterButton} activeOpacity={0.8}>
-                        <SlidersHorizontal size={22} color={colors.white} />
-                    </TouchableOpacity>
-                </View>
-
-                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
-                    {/* Banners */}
+                    {/* Category Shelf */}
                     <ScrollView
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.bannersList}
-                        snapToInterval={width * 0.85 + 16}
-                        decelerationRate="fast"
+                        contentContainerStyle={styles.catScroll}
                     >
-                        {/* Banner 1 */}
-                        <TouchableOpacity
-                            style={[styles.bannerContainer, { backgroundColor: '#1C1C1E' }]}
-                            activeOpacity={0.9}
-                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'New Arrivals' })}
-                        >
-                            <View style={styles.bannerTextContainer}>
-                                <Text style={styles.newCollectionText}>NEW DROPS</Text>
-                                <Text style={styles.discountText}>Winter{'\n'}Collection</Text>
-                                <View style={styles.shopNowButton}>
-                                    <Text style={styles.shopNowText}>Explore</Text>
-                                </View>
-                            </View>
-                            <Image
-                                source={{ uri: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80' }}
-                                style={styles.bannerImage}
-                            />
-                        </TouchableOpacity>
-
-                        {/* Banner 2 */}
-                        <TouchableOpacity
-                            style={[styles.bannerContainer, { backgroundColor: '#FF6B4A' }]}
-                            activeOpacity={0.9}
-                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Flash Sale' })}
-                        >
-                            <View style={styles.bannerTextContainer}>
-                                <Text style={styles.newCollectionText}>FLASH SALE</Text>
-                                <Text style={styles.discountText}>Up to 50%{'\n'}Off Today</Text>
-                                <View style={styles.shopNowButton}>
-                                    <Text style={[styles.shopNowText, { color: '#FF6B4A' }]}>Shop All</Text>
-                                </View>
-                            </View>
-                            <Image
-                                source={{ uri: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&q=80' }}
-                                style={styles.bannerImage}
-                            />
-                        </TouchableOpacity>
-                    </ScrollView>
-
-                    {/* Categories */}
-                    <FlatList
-                        data={CATEGORIES}
-                        renderItem={renderCategory}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.categoryList}
-                    />
-
-                    {/* Recommended */}
-                    <View style={styles.sectionHeader}>
-                        <View style={styles.titleWithIcon}>
-                            <Sparkles size={20} color="#1C1C1E" style={{ marginRight: 8 }} />
-                            <Text style={styles.sectionTitle}>Just For You</Text>
-                        </View>
-                        <TouchableOpacity onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'New Arrivals' })}>
-                            <Text style={styles.seeAllText}>Browse all</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.productsGrid}>
-                        <FlatList
-                            data={PRODUCTS}
-                            renderItem={renderProduct}
-                            numColumns={2}
-                            scrollEnabled={false}
-                            keyExtractor={item => item.id}
-                            columnWrapperStyle={{ justifyContent: 'space-between' }}
-                        />
-                    </View>
-
-                    {/* Recently Viewed */}
-                    <View style={[styles.sectionHeader, { marginTop: 40 }]}>
-                        <View style={styles.titleWithIcon}>
-                            <Clock size={20} color="#1C1C1E" style={{ marginRight: 8 }} />
-                            <Text style={styles.sectionTitle}>Continue Browsing</Text>
-                        </View>
-                    </View>
-
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.horizontalList}
-                    >
-                        {PRODUCTS.slice(0, 3).map((item) => (
+                        {CATEGORIES.map(cat => (
                             <TouchableOpacity
-                                key={item.id}
-                                style={styles.recentItem}
-                                onPress={() => navigation.navigate('ProductDetails', { product: item })}
+                                key={cat.id}
+                                style={[styles.catBtn, activeCategory === cat.id && styles.catBtnActive]}
+                                onPress={() => setActiveCategory(cat.id)}
                             >
-                                <Image source={{ uri: item.image }} style={styles.recentImage} />
-                                <Text style={styles.recentName} numberOfLines={1}>{item.name}</Text>
+                                <Text style={styles.catIcon}>{cat.icon}</Text>
+                                <Text style={[styles.catLabel, activeCategory === cat.id && styles.catLabelActive]}>
+                                    {cat.name}
+                                </Text>
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
 
-                    {/* Marketing Triggers */}
-                    <View style={styles.discoveryGrid}>
-                        <TouchableOpacity
-                            style={[styles.discoveryCard, { backgroundColor: '#F0F9F4' }]}
-                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Best Sellers' })}
-                        >
-                            <TrendingUp size={24} color="#34C759" />
-                            <Text style={styles.discoveryTitle}>Best Sellers</Text>
-                            <Text style={styles.discoverySubtitle}>Most loved pieces</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.discoveryCard, { backgroundColor: '#FFF5F2' }]}
-                            onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Deal of the Day' })}
-                        >
-                            <Flame size={24} color="#FF6B4A" />
-                            <Text style={styles.discoveryTitle}>Daily Deals</Text>
-                            <Text style={styles.discoverySubtitle}>24h limited offers</Text>
+                    {/* Main Promotion */}
+                    <TouchableOpacity
+                        style={styles.mainPromo}
+                        activeOpacity={0.9}
+                        onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Flash Sale' })}
+                    >
+                        <Image source={{ uri: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200&q=80' }} style={styles.promoImg} />
+                        <View style={styles.promoOverlay}>
+                            <View style={styles.flashBadge}>
+                                <Flame size={12} color="#FFF" fill="#FFF" />
+                                <Text style={styles.flashText}>LIMITED RELEASE</Text>
+                            </View>
+                            <Text style={styles.promoTitle}>Winter Sale</Text>
+                            <Text style={styles.promoSub}>Access up to 40% privilege on select pieces.</Text>
+                            <TouchableOpacity style={styles.promoBtn}>
+                                <Text style={styles.promoBtnText}>Shop Collection</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
+
+                    {/* Popular Collections */}
+                    <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>COLLECTIONS</Text>
+                        <TouchableOpacity><Text style={styles.seeAll}>SEE ALL</Text></TouchableOpacity>
+                    </View>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.colScroll}>
+                        {COLLECTIONS.map(col => (
+                            <TouchableOpacity key={col.id} style={styles.colCard} activeOpacity={0.8}>
+                                <Image source={{ uri: col.image }} style={styles.colImg} />
+                                <View style={styles.colOverlay}>
+                                    <Text style={styles.colLabel}>{col.label}</Text>
+                                    <Text style={styles.colTitle}>{col.name}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+
+                    {/* Product Grid: Featured */}
+                    <View style={[styles.sectionHeader, { marginTop: 40 }]}>
+                        <View style={styles.titleRow}>
+                            <Zap size={18} color={colors.primary} fill={colors.primary} />
+                            <Text style={styles.sectionTitle}>TRENDING NOW</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('PromotionalListing', { collectionType: 'Best Sellers' })}>
+                            <Text style={styles.seeAll}>VIEW ALL</Text>
                         </TouchableOpacity>
                     </View>
-                </ScrollView>
 
+                    <View style={styles.productGrid}>
+                        {FEATURED_PRODUCTS.map((p, idx) => renderProduct(p, idx))}
+                    </View>
+
+                    <View style={{ height: 120 }} />
+                </ScrollView>
             </SafeAreaView>
             <BottomNav />
         </View>
     );
 };
 
-// Mini helper to avoid heavy dependency if expo-linear-gradient isn't imported everywhere
-const LinearGradientOverlay = () => (
-    <View style={styles.gradientOverlay} />
-);
-
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FAFAFA',
-    },
-    safeArea: {
-        flex: 1,
-        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 24,
-        paddingTop: 16,
-        paddingBottom: 24,
-    },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        marginRight: 16,
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-    },
-    subGreeting: {
-        fontSize: 14,
-        color: '#8E8E93',
-        fontWeight: '500',
-        marginBottom: 2,
-    },
-    greetingText: {
-        fontSize: 22,
-        fontWeight: typography.weightBold,
-        color: '#1C1C1E',
-        letterSpacing: -0.5,
-    },
-    notificationButton: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        backgroundColor: '#FFFFFF',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 3,
-    },
-    badge: {
-        position: 'absolute',
-        top: 12,
-        right: 14,
-        width: 10,
-        height: 10,
-        borderRadius: 5,
-        backgroundColor: '#FF3B30',
-        borderWidth: 2,
-        borderColor: '#FFFFFF',
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        paddingHorizontal: 24,
-        marginBottom: 28,
-        gap: 12,
-    },
-    searchBar: {
-        flex: 1,
-        height: 56,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 16,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.04,
-        shadowRadius: 15,
-        elevation: 2,
-    },
-    placeholderText: {
-        color: '#A0A0A0',
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    filterButton: {
-        width: 56,
-        height: 56,
-        borderRadius: 16,
-        backgroundColor: '#1C1C1E',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#1C1C1E',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.2,
-        shadowRadius: 15,
-        elevation: 6,
-    },
-    bannersList: {
-        paddingHorizontal: 24,
-        paddingBottom: 32,
-        gap: 16,
-    },
-    bannerContainer: {
-        width: width * 0.85,
-        height: 180,
-        borderRadius: 28,
-        flexDirection: 'row',
-        overflow: 'hidden',
-        position: 'relative',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 12 },
-        shadowOpacity: 0.2,
-        shadowRadius: 20,
-        elevation: 12,
-    },
-    bannerTextContainer: {
-        flex: 1,
-        padding: 24,
-        justifyContent: 'center',
-        zIndex: 2,
-    },
-    newCollectionText: {
-        color: 'rgba(255,255,255,0.7)',
-        fontSize: 12,
-        fontWeight: '800',
-        letterSpacing: 1.5,
-        marginBottom: 8,
-    },
-    discountText: {
-        color: '#FFFFFF',
-        fontSize: 28,
-        fontWeight: '900',
-        lineHeight: 32,
-        letterSpacing: -0.5,
-        marginBottom: 16,
-    },
-    shopNowButton: {
-        backgroundColor: '#FFFFFF',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 100,
-        alignSelf: 'flex-start',
-    },
-    shopNowText: {
-        color: '#1C1C1E',
-        fontWeight: '800',
-        fontSize: 13,
-        letterSpacing: 0.5,
-    },
-    bannerImage: {
-        position: 'absolute',
-        right: -30,
-        bottom: -20,
-        width: 200,
-        height: 200,
-        transform: [{ rotate: '-10deg' }]
-    },
-    categoryList: {
-        paddingHorizontal: 24,
-        marginBottom: 32,
-        gap: 12,
-    },
-    categoryChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 6,
-        paddingRight: 16,
-        paddingVertical: 6,
-        borderRadius: 100,
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.03,
-        shadowRadius: 8,
-        elevation: 2,
-    },
-    categoryChipActive: {
-        backgroundColor: '#1C1C1E',
-    },
-    categoryIconCircle: {
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: '#F5F5F5',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginRight: 10,
-    },
-    categoryText: {
-        fontSize: 15,
-        fontWeight: '700',
-        color: '#8E8E93',
-    },
-    categoryTextActive: {
-        color: '#FFFFFF',
-    },
-    sectionHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-end',
-        paddingHorizontal: 24,
-        marginBottom: 20,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: '800',
-        color: '#1C1C1E',
-        letterSpacing: -0.5,
-    },
-    seeAllText: {
-        fontSize: 15,
-        color: '#FF6B4A',
-        fontWeight: '700',
-        marginBottom: 2,
-    },
-    productsGrid: {
-        paddingHorizontal: 24,
-    },
-    productCard: {
-        flex: 1,
-        marginBottom: 24,
-    },
-    imageContainer: {
-        width: '100%',
-        height: 200,
-        borderRadius: 24,
-        overflow: 'hidden',
-        marginBottom: 16,
-        backgroundColor: '#F0F0F0',
-        position: 'relative',
-    },
-    productImage: {
-        width: '100%',
-        height: '100%',
-        resizeMode: 'cover',
-    },
-    gradientOverlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.03)',
-    },
-    favoriteButton: {
-        position: 'absolute',
-        top: 12,
-        right: 12,
-        width: 36,
-        height: 36,
-        borderRadius: 18,
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-    },
-    favoriteButtonActive: {
-        backgroundColor: '#FF6B4A',
-    },
-    ratingBadge: {
-        position: 'absolute',
-        bottom: 12,
-        left: 12,
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
-    },
-    ratingText: {
-        marginLeft: 4,
-        fontSize: 12,
-        fontWeight: '800',
-        color: '#1C1C1E',
-    },
-    productInfo: {
-        paddingHorizontal: 4,
-    },
-    productName: {
-        fontSize: 15,
-        fontWeight: '700',
-        color: '#1C1C1E',
-        marginBottom: 6,
-        letterSpacing: -0.2,
-    },
-    productPrice: {
-        fontSize: 16,
-        fontWeight: '800',
-        color: '#FF6B4A',
-    },
-    titleWithIcon: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    horizontalList: {
-        paddingHorizontal: 24,
-        gap: 16,
-        marginBottom: 32,
-    },
-    recentItem: {
-        width: 140,
-    },
-    recentImage: {
-        width: 140,
-        height: 180,
-        borderRadius: 20,
-        backgroundColor: '#F5F5F5',
-        marginBottom: 10,
-    },
-    recentName: {
-        fontSize: 14,
-        fontWeight: '700',
-        color: '#1C1C1E',
-        paddingHorizontal: 4,
-    },
-    discoveryGrid: {
-        flexDirection: 'row',
-        paddingHorizontal: 24,
-        gap: 16,
-        marginTop: 16,
-    },
-    discoveryCard: {
-        flex: 1,
-        padding: 20,
-        borderRadius: 24,
-        gap: 8,
-    },
-    discoveryTitle: {
-        fontSize: 16,
-        fontWeight: '900',
-        color: '#1C1C1E',
-        marginTop: 4,
-    },
-    discoverySubtitle: {
-        fontSize: 12,
-        color: '#8E8E93',
-        fontWeight: '600',
-    },
+    container: { flex: 1, backgroundColor: '#FFFFFF' },
+    safeArea: { flex: 1 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 12 },
+    brandBox: { height: 44, justifyContent: 'center' },
+    brandTitle: { fontSize: 24, fontWeight: '900', color: colors.secondary, letterSpacing: -1, fontFamily: typography.display },
+    headerActions: { flexDirection: 'row', gap: 8 },
+    iconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.lightGray, justifyContent: 'center', alignItems: 'center' },
+    notifDot: { position: 'absolute', top: 12, right: 12, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, borderWidth: 2, borderColor: colors.lightGray },
+
+    scroll: { paddingBottom: 40 },
+    searchSection: { paddingHorizontal: 24, marginTop: 16 },
+    searchBar: { height: 56, backgroundColor: colors.lightGray, borderRadius: 2, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 12 },
+    searchInput: { flex: 1, fontSize: 14, fontWeight: '500', color: colors.secondary },
+    filterBtn: { padding: 4 },
+
+    catScroll: { paddingHorizontal: 24, paddingVertical: 24, gap: 10 },
+    catBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: colors.lightGray, borderRadius: 2, gap: 10, borderWidth: 1, borderColor: colors.border },
+    catBtnActive: { backgroundColor: colors.secondary, borderColor: colors.secondary },
+    catIcon: { fontSize: 16 },
+    catLabel: { fontSize: 13, fontWeight: '800', color: colors.muted },
+    catLabelActive: { color: colors.white },
+
+    mainPromo: { marginHorizontal: 24, height: 220, borderRadius: 2, overflow: 'hidden', marginBottom: 32 },
+    promoImg: { width: '100%', height: '100%' },
+    promoOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.35)', padding: 24, justifyContent: 'center' },
+    flashBadge: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', backgroundColor: colors.accent, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 2, gap: 6, marginBottom: 12 },
+    flashText: { color: colors.white, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
+    promoTitle: { color: colors.white, fontSize: 36, fontWeight: '400', fontFamily: typography.display, marginBottom: 4 },
+    promoSub: { color: 'rgba(255,255,255,0.8)', fontSize: 14, fontWeight: '500', marginBottom: 20 },
+    promoBtn: { alignSelf: 'flex-start', backgroundColor: colors.white, paddingHorizontal: 20, paddingVertical: 10, borderRadius: 2 },
+    promoBtnText: { fontSize: 13, fontWeight: '900', color: colors.secondary, letterSpacing: 0.5 },
+
+    sectionHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, marginBottom: 20 },
+    titleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+    sectionTitle: { fontSize: 13, fontWeight: '900', color: colors.secondary, letterSpacing: 1.5 },
+    seeAll: { fontSize: 10, fontWeight: '900', color: colors.muted, letterSpacing: 1 },
+
+    colScroll: { paddingHorizontal: 24, gap: 16 },
+    colCard: { width: 200, height: 260, borderRadius: 2, overflow: 'hidden', backgroundColor: colors.lightGray },
+    colImg: { width: '100%', height: '100%' },
+    colOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)', padding: 20, justifyContent: 'flex-end' },
+    colLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 10, fontWeight: '900', letterSpacing: 1.5, marginBottom: 4 },
+    colTitle: { color: colors.white, fontSize: 20, fontWeight: '400', fontFamily: typography.display },
+
+    productGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingBottom: 40 },
+    productCard: { width: PRODUCT_CARD_WIDTH, marginBottom: 32 },
+    imageBox: { width: '100%', height: 220, backgroundColor: colors.lightGray, borderRadius: 2, overflow: 'hidden', marginBottom: 12 },
+    productImg: { width: '100%', height: '100%', resizeMode: 'cover' },
+    cardFav: { position: 'absolute', top: 12, right: 12, width: 32, height: 32, backgroundColor: 'rgba(255,255,255,0.9)', borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
+    ratingBadge: { position: 'absolute', bottom: 12, left: 12, flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.9)', paddingHorizontal: 6, paddingVertical: 3, borderRadius: 2, gap: 4 },
+    ratingVal: { fontSize: 10, fontWeight: '800', color: colors.secondary },
+    cardCat: { fontSize: 9, fontWeight: '900', color: colors.muted, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 },
+    cardName: { fontSize: 15, fontWeight: '700', color: colors.secondary, marginBottom: 8 },
+    cardPriceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+    cardPrice: { fontSize: 15, fontWeight: '900', color: colors.secondary },
+    addGhost: { padding: 4 }
 });

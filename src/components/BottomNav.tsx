@@ -29,7 +29,7 @@ const NavItem = ({ icon: Icon, label, isActive, onPress }: NavItemProps) => {
 
     const backgroundColor = animation.interpolate({
         inputRange: [0, 1],
-        outputRange: ['transparent', '#FF6B4A']
+        outputRange: ['transparent', colors.primary]
     });
 
     const itemWidth = animation.interpolate({
@@ -66,23 +66,16 @@ export const BottomNav = () => {
         <View style={styles.floatingContainer}>
             <View style={styles.content}>
                 <NavItem
-                    icon={House}
-                    routeName="Home"
-                    label="Home"
-                    isActive={currentRoute === 'Home'}
-                    onPress={() => navigation.navigate('Home')}
-                />
-                <NavItem
                     icon={Store}
-                    routeName="Shop"
+                    routeName="Home"
                     label="Shop"
-                    isActive={currentRoute === 'Shop' || currentRoute === 'CategoryListing'}
-                    onPress={() => navigation.navigate('Shop')}
+                    isActive={currentRoute === 'Home' || currentRoute === 'Shop' || currentRoute === 'CategoryListing'}
+                    onPress={() => navigation.navigate('Home')}
                 />
                 <NavItem
                     icon={ShoppingBag}
                     routeName="Cart"
-                    label="Cart"
+                    label="Bag"
                     isActive={currentRoute === 'Cart'}
                     onPress={() => navigation.navigate('Cart')}
                 />

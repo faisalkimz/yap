@@ -140,30 +140,56 @@ export const ChangePasswordScreen = ({ navigation }: any) => {
 };
 
 // --- Address Book ---
+const MOCK_ADDRESSES = [
+    {
+        id: '1',
+        label: 'Home',
+        address: '6, Cole Palmer Avenue, London, UK',
+        phone: '+44 7890 123456',
+        name: 'Faisal Kimz',
+        city: 'London',
+        isDefault: true
+    },
+    {
+        id: '2',
+        label: 'Office',
+        address: '12, Tech Hub Street, Canary Wharf, London',
+        name: 'Faisal Kimz',
+        city: 'London',
+        phone: '+44 7890 998877'
+    },
+];
+
 export const AddressScreen = ({ navigation }: any) => {
     return (
         <SectionLayout
-            title="Address Book"
+            title="Residence Archive"
             navigation={navigation}
             footer={
-                <TouchableOpacity style={styles.primaryBtn}>
+                <TouchableOpacity
+                    style={styles.primaryBtn}
+                    onPress={() => navigation.navigate('AddEditAddress', {})}
+                >
                     <Plus size={20} color="#FFFFFF" strokeWidth={3} style={{ marginRight: 8 }} />
-                    <Text style={styles.primaryBtnText}>Add New Address</Text>
+                    <Text style={styles.primaryBtnText}>Register New Residence</Text>
                 </TouchableOpacity>
             }
         >
             <View style={styles.listSection}>
-                <AddressCard
-                    label="Home"
-                    address="6, Cole Palmer Avenue, London, UK"
-                    phone="+44 7890 123456"
-                    isDefault
-                />
-                <AddressCard
-                    label="Office"
-                    address="12, Tech Hub Street, Canary Wharf, London"
-                    phone="+44 7890 998877"
-                />
+                {MOCK_ADDRESSES.map(item => (
+                    <TouchableOpacity
+                        key={item.id}
+                        activeOpacity={0.9}
+                        onPress={() => navigation.navigate('AddEditAddress', { addressId: item.id, initialData: item })}
+                    >
+                        <AddressCard
+                            label={item.label}
+                            address={item.address}
+                            phone={item.phone}
+                            isDefault={item.isDefault}
+                        />
+                    </TouchableOpacity>
+                ))}
             </View>
         </SectionLayout>
     );

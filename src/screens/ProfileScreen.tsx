@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, Platform, StatusBar } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -19,29 +19,21 @@ import {
     Star,
     Ticket,
     Wallet,
-    Bell
+    Bell,
+    BookOpen,
+    Store,
+    MoveRight
 } from 'lucide-react-native';
+
+import { colors } from '../theme/colors';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
-const DASHBOARD_MENU = [
-    { icon: User, label: 'Personal Information', route: 'EditProfile' },
-    { icon: Package, label: 'My Orders', route: 'Orders' },
-    { icon: MapPin, label: 'Address Book', route: 'Address' },
-    { icon: CreditCard, label: 'Saved Payments', route: 'PaymentMethods' },
-];
-
-const SHOPPING_MENU = [
-    { icon: Heart, label: 'Wishlist', route: 'Favorites' },
-    { icon: Eye, label: 'Recently Viewed', route: 'Home' }, // Placeholder routes
-    { icon: Star, label: 'My Reviews', route: 'Support' },
-    { icon: Ticket, label: 'My Coupons', route: 'Support' },
-];
-
-const PREFERENCES_MENU = [
-    { icon: Settings, label: 'Settings', route: 'Settings' },
-    { icon: Shield, label: 'Privacy & Security', route: 'Support' },
-    { icon: HelpCircle, label: 'Help & Support', route: 'Support' },
+const DASHBOARD_ITEMS = [
+    { icon: User, label: 'Info', route: 'EditProfile', sub: 'Details' },
+    { icon: Package, label: 'Orders', route: 'Orders', sub: 'Track' },
+    { icon: MapPin, label: 'Address', route: 'Address', sub: 'Book' },
+    { icon: Wallet, label: 'Wallet', route: 'Wallet', sub: 'Funds' },
 ];
 
 export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
@@ -50,79 +42,118 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Account</Text>
-                    <View style={{ flexDirection: 'row', gap: 12 }}>
-                        <TouchableOpacity style={styles.iconHeader} onPress={() => navigation.navigate('Notifications')}>
-                            <Bell size={22} color="#1C1C1E" strokeWidth={2.5} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.walletHeader} onPress={() => navigation.navigate('Wallet')}>
-                            <Wallet size={18} color="#1C1C1E" strokeWidth={2.5} />
-                            <Text style={styles.walletAmount}>£1,250.00</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <Text style={styles.brandTitle}>YAP</Text>
+                    <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.navigate('Notifications')}>
+                        <Bell size={22} color="#1C1C1E" />
+                        <View style={styles.notifDot} />
+                    </TouchableOpacity>
                 </View>
 
                 <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-                    {/* Premium Profile Hero */}
-                    <View style={styles.profileHero}>
-                        <View style={styles.avatarContainer}>
+                    {/* Hero Section */}
+                    <View style={styles.hero}>
+                        <View style={styles.avatarWrapper}>
                             <Image
-                                source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80' }}
+                                source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80' }}
                                 style={styles.avatar}
                             />
-                            <TouchableOpacity style={styles.editBadge} activeOpacity={0.8} onPress={() => navigation.navigate('EditProfile')}>
-                                <Pencil size={12} color="#FFFFFF" strokeWidth={3} />
+                            <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditProfile')}>
+                                <Pencil size={12} color="#FFF" />
                             </TouchableOpacity>
                         </View>
-                        <Text style={styles.name}>Faisal Kimz</Text>
-                        <Text style={styles.email}>faisal@example.com</Text>
-                        <View style={styles.rankBadge}>
-                            <Text style={styles.rankText}>TITANIUM MEMBER</Text>
+                        <View style={styles.heroText}>
+                            <Text style={styles.greeting}>Good Evening,</Text>
+                            <Text style={styles.name}>Faisal Kimz</Text>
+                            <View style={styles.statusRow}>
+                                <Text style={styles.statusText}>Titanium Curator</Text>
+                                <View style={styles.statusDivider} />
+                                <Text style={styles.statusPoints}>2.4k Pts</Text>
+                            </View>
                         </View>
                     </View>
 
-                    {/* Dashboard Section */}
-                    <Text style={styles.sectionTitle}>Dashboard</Text>
-                    <View style={styles.menuCard}>
-                        {DASHBOARD_MENU.map((item, index) => (
-                            <MenuRow key={index} item={item} navigation={navigation} isLast={index === DASHBOARD_MENU.length - 1} />
-                        ))}
+                    {/* Dashboard Grid - Human Layout */}
+                    <View style={styles.gridSection}>
+                        <View style={styles.gridRow}>
+                            {DASHBOARD_ITEMS.slice(0, 2).map((item, idx) => {
+                                const isLarge = idx === 0;
+                                return (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        style={[styles.gridCard, isLarge && styles.gridCardLarge]}
+                                        onPress={() => navigation.navigate(item.route as any)}
+                                    >
+                                        <item.icon size={24} color={isLarge ? "#FFFFFF" : "#1C1C1E"} strokeWidth={1.5} />
+                                        <View style={styles.cardLabels}>
+                                            <Text style={[styles.cardMain, isLarge && { color: '#FFFFFF' }]}>{item.label}</Text>
+                                            <Text style={[styles.cardSub, isLarge && { color: 'rgba(255,255,255,0.6)' }]}>{item.sub}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                        <View style={styles.gridRow}>
+                            {DASHBOARD_ITEMS.slice(2, 4).map((item, idx) => {
+                                const isLarge = idx === 1;
+                                return (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        style={[styles.gridCard, isLarge && styles.gridCardLarge]}
+                                        onPress={() => navigation.navigate(item.route as any)}
+                                    >
+                                        <item.icon size={24} color={isLarge ? "#FFFFFF" : "#1C1C1E"} strokeWidth={1.5} />
+                                        <View style={styles.cardLabels}>
+                                            <Text style={[styles.cardMain, isLarge && { color: '#FFFFFF' }]}>{item.label}</Text>
+                                            <Text style={[styles.cardSub, isLarge && { color: 'rgba(255,255,255,0.6)' }]}>{item.sub}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
                     </View>
 
-                    {/* Shopping Section */}
-                    <Text style={styles.sectionTitle}>Shopping & Content</Text>
-                    <View style={styles.menuCard}>
-                        {SHOPPING_MENU.map((item, index) => (
-                            <MenuRow
-                                key={index}
-                                item={{
-                                    ...item,
-                                    route: item.label === 'Wishlist' ? 'Favorites' : 'ShoppingExtras'
-                                }}
-                                navigation={navigation}
-                                isLast={index === SHOPPING_MENU.length - 1}
-                            />
-                        ))}
+                    {/* Curated Links */}
+                    <View style={styles.curatedSection}>
+                        <Text style={styles.sectionHeading}>Curated for you</Text>
+
+                        <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('StoreLocator')}>
+                            <View style={styles.curatedLeft}>
+                                <Store size={20} color="#1C1C1E" />
+                                <Text style={styles.curatedLabel}>Find a Boutique</Text>
+                            </View>
+                            <MoveRight size={20} color="#1C1C1E" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.curatedLink} onPress={() => navigation.navigate('Favorites')}>
+                            <View style={styles.curatedLeft}>
+                                <Heart size={20} color="#1C1C1E" />
+                                <Text style={styles.curatedLabel}>The Collection (Wishlist)</Text>
+                            </View>
+                            <MoveRight size={20} color="#1C1C1E" />
+                        </TouchableOpacity>
                     </View>
 
-                    {/* Preferences Section */}
-                    <Text style={styles.sectionTitle}>App Preferences</Text>
-                    <View style={styles.menuCard}>
-                        {PREFERENCES_MENU.map((item, index) => (
-                            <MenuRow key={index} item={item} navigation={navigation} isLast={index === PREFERENCES_MENU.length - 1} />
-                        ))}
+                    {/* App Maintenance */}
+                    <View style={styles.appMaintenance}>
+                        <TouchableOpacity style={styles.settingBtn} onPress={() => navigation.navigate('Settings')}>
+                            <Settings size={18} color="#8E8E93" />
+                            <Text style={styles.settingText}>Preference Settings</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.settingBtn} onPress={() => navigation.navigate('SupportHub')}>
+                            <HelpCircle size={18} color="#8E8E93" />
+                            <Text style={styles.settingText}>Assistance & Policies</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.signOutBtn}
+                            onPress={() => navigation.navigate('LogoutConfirmation')}
+                        >
+                            <Text style={styles.signOutText}>Secure Logout</Text>
+                            <LogOut size={16} color={colors.accent} />
+                        </TouchableOpacity>
                     </View>
 
-                    {/* Logout */}
-                    <TouchableOpacity
-                        style={styles.logoutBtn}
-                        onPress={() => navigation.navigate('LogoutConfirmation')}
-                    >
-                        <LogOut size={20} color="#FF3B30" strokeWidth={2.5} style={{ marginRight: 12 }} />
-                        <Text style={styles.logoutText}>Securely Log Out</Text>
-                    </TouchableOpacity>
-
-                    <Text style={styles.version}>Yap Luxurious Lifestyle • v1.4.2</Text>
+                    <Text style={styles.legalNotice}>Handcrafted by Yap PLC. v2.4.1</Text>
                 </ScrollView>
             </SafeAreaView>
             <BottomNav />
@@ -130,50 +161,49 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     );
 };
 
-const MenuRow = ({ item, navigation, isLast }: any) => (
-    <TouchableOpacity
-        style={[styles.menuRow, !isLast && styles.menuBorder]}
-        onPress={() => navigation.navigate(item.route)}
-        activeOpacity={0.6}
-    >
-        <View style={styles.menuLeft}>
-            <View style={styles.iconBox}>
-                <item.icon size={20} color="#1C1C1E" strokeWidth={2} />
-            </View>
-            <Text style={styles.menuLabel}>{item.label}</Text>
-        </View>
-        <ChevronRight size={18} color="#C7C7CC" strokeWidth={3} />
-    </TouchableOpacity>
-);
-
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#FFFFFF' },
     safeArea: { flex: 1, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 },
-    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingTop: 16, marginBottom: 24 },
-    title: { fontSize: 32, fontWeight: '900', color: '#1C1C1E', letterSpacing: -1 },
-    iconHeader: { width: 44, height: 44, borderRadius: 22, backgroundColor: '#F5F5F5', justifyContent: 'center', alignItems: 'center' },
-    walletHeader: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F5F5F5', paddingHorizontal: 16, paddingVertical: 10, borderRadius: 100, gap: 8 },
-    walletAmount: { fontSize: 14, fontWeight: '900', color: '#1C1C1E' },
-    scrollContent: { paddingHorizontal: 24, paddingBottom: 140 },
+    header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 16 },
+    brandTitle: { fontSize: 28, fontWeight: '900', color: colors.secondary, letterSpacing: -1.5 },
+    iconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.lightGray, justifyContent: 'center', alignItems: 'center' },
+    notifDot: { position: 'absolute', top: 12, right: 12, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, borderWidth: 2, borderColor: colors.lightGray },
 
-    profileHero: { alignItems: 'center', marginBottom: 40 },
-    avatarContainer: { position: 'relative', marginBottom: 16 },
-    avatar: { width: 100, height: 100, borderRadius: 50, borderWidth: 4, borderColor: '#FFFFFF' },
-    editBadge: { position: 'absolute', bottom: 0, right: 0, width: 30, height: 30, borderRadius: 15, backgroundColor: '#1C1C1E', justifyContent: 'center', alignItems: 'center', borderWidth: 3, borderColor: '#FFFFFF' },
-    name: { fontSize: 24, fontWeight: '900', color: '#1C1C1E', letterSpacing: -0.5, marginBottom: 4 },
-    email: { fontSize: 14, color: '#8E8E93', fontWeight: '500', marginBottom: 12 },
-    rankBadge: { backgroundColor: '#F5F5F5', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-    rankText: { fontSize: 10, fontWeight: '900', color: '#1C1C1E', letterSpacing: 1.5 },
+    scrollContent: { paddingBottom: 120 },
 
-    sectionTitle: { fontSize: 13, fontWeight: '900', color: '#8E8E93', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16, marginLeft: 4 },
-    menuCard: { backgroundColor: '#FFFFFF', borderRadius: 28, paddingHorizontal: 20, marginBottom: 32, borderWidth: 1, borderColor: '#F0F0F0', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.02, shadowRadius: 10, elevation: 2 },
-    menuRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 20 },
-    menuBorder: { borderBottomWidth: 1, borderBottomColor: '#F8F8F8' },
-    menuLeft: { flexDirection: 'row', alignItems: 'center' },
-    iconBox: { width: 44, height: 44, borderRadius: 14, backgroundColor: '#F8F8F8', justifyContent: 'center', alignItems: 'center', marginRight: 16 },
-    menuLabel: { fontSize: 16, fontWeight: '700', color: '#1C1C1E' },
+    hero: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, marginTop: 24, marginBottom: 40 },
+    avatarWrapper: { position: 'relative' },
+    avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.lightGray },
+    editBtn: { position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: 14, backgroundColor: colors.secondary, justifyContent: 'center', alignItems: 'center', borderWidth: 3, borderColor: colors.white },
+    heroText: { marginLeft: 20 },
+    greeting: { fontSize: 13, color: colors.muted, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 },
+    name: { fontSize: 24, fontWeight: '900', color: colors.secondary, letterSpacing: -0.5 },
+    statusRow: { flexDirection: 'row', alignItems: 'center', marginTop: 4 },
+    statusText: { fontSize: 13, fontWeight: '800', color: colors.primary },
+    statusDivider: { width: 4, height: 4, borderRadius: 2, backgroundColor: colors.border, marginHorizontal: 10 },
+    statusPoints: { fontSize: 13, fontWeight: '800', color: colors.secondary },
 
-    logoutBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFF5F2', paddingVertical: 20, borderRadius: 24, marginBottom: 40 },
-    logoutText: { color: '#FF3B30', fontSize: 16, fontWeight: '800' },
-    version: { textAlign: 'center', fontSize: 12, fontWeight: '700', color: '#C7C7CC', letterSpacing: 0.5 }
+    gridSection: { paddingHorizontal: 24, gap: 12 },
+    gridRow: { flexDirection: 'row', gap: 12 },
+    gridCard: { flex: 1, height: 120, backgroundColor: colors.lightGray, borderRadius: 2, padding: 20, justifyContent: 'space-between' },
+    gridCardLarge: { flex: 1.4, backgroundColor: colors.secondary },
+    cardLabels: {},
+    cardMain: { fontSize: 16, fontWeight: '900', color: colors.secondary },
+    cardSub: { fontSize: 11, fontWeight: '800', color: colors.muted, textTransform: 'uppercase', marginTop: 2 },
+    // Adjust colors for large card
+    gridCardLarge_icon: { color: colors.white },
+
+    curatedSection: { marginTop: 48, paddingHorizontal: 24 },
+    sectionHeading: { fontSize: 12, fontWeight: '900', color: colors.muted, textTransform: 'uppercase', letterSpacing: 2, marginBottom: 24 },
+    curatedLink: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 20, borderBottomWidth: 1, borderBottomColor: colors.lightGray },
+    curatedLeft: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+    curatedLabel: { fontSize: 17, fontWeight: '700', color: colors.secondary },
+
+    appMaintenance: { marginTop: 48, paddingHorizontal: 24, gap: 16 },
+    settingBtn: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    settingText: { fontSize: 14, fontWeight: '800', color: colors.muted },
+    signOutBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 16 },
+    signOutText: { fontSize: 14, fontWeight: '900', color: colors.accent, textTransform: 'uppercase', letterSpacing: 1 },
+
+    legalNotice: { textAlign: 'center', marginTop: 60, fontSize: 11, color: colors.muted, fontWeight: '700', letterSpacing: 1 }
 });
