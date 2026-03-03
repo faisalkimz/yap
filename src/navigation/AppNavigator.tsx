@@ -51,6 +51,64 @@ import { MyReviewsScreen } from '../screens/MyReviewsScreen';
 import { CouponsScreen } from '../screens/CouponsScreen';
 import { InboxScreen } from '../screens/InboxScreen';
 
+// Vendor Screens
+import {
+  VendorLoginScreen,
+  VendorRegisterScreen,
+  VendorDashboardScreen,
+  VendorAddProductScreen,
+  VendorAnalyticsScreen,
+  VendorPayoutScreen,
+  VendorReturnsScreen,
+  VendorProfileScreen,
+  VendorStorefrontScreen
+} from '../screens/VendorScreens';
+
+// These use the dashboard with tabs
+const VendorProductsScreen = VendorDashboardScreen;
+const VendorOrdersScreen = VendorDashboardScreen;
+const VendorMessagesScreen = VendorDashboardScreen;
+
+// Admin Screens
+import {
+  AdminLoginScreen,
+  AdminDashboardScreen,
+  AdminCategoriesScreen,
+  AdminVendorsScreen,
+  AdminCouponsScreen,
+  AdminBannersScreen,
+  AdminFinanceScreen,
+  AdminSettingsScreen,
+} from '../screens/AdminScreens';
+
+// Feature Screens
+import {
+  SubscriptionPlansScreen,
+  MembershipPageScreen,
+  LoyaltyProgramScreen,
+  GiftCardsScreen,
+  AffiliateDashboardScreen,
+  ReferralProgramScreen,
+  AbandonedCartScreen,
+  AIRecommendationsScreen,
+  CurrencySwitcherScreen,
+  LanguageSwitcherScreen,
+  AuctionPageScreen,
+  PreOrderPageScreen,
+  BookingPageScreen,
+  DigitalDownloadsScreen,
+  RentalProductsScreen,
+  WholesalePricingScreen,
+  Error404Screen,
+  Error500Screen,
+  MaintenanceScreen,
+  AccessDeniedScreen,
+  SessionExpiredScreen,
+  PushNotificationsScreen,
+  InAppChatScreen,
+  BiometricSetupScreen,
+} from '../screens/FeatureScreens';
+
 // Auth Screens
 import { OtpVerificationScreen } from '../screens/auth/OtpVerificationScreen';
 import { EmailVerificationScreen } from '../screens/auth/EmailVerificationScreen';
@@ -142,6 +200,67 @@ export const AppNavigator = () => {
         <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="SocialLoginCallback" component={SocialLoginCallbackScreen} />
         <Stack.Screen name="LogoutConfirmation" component={LogoutConfirmationScreen} options={{ presentation: 'transparentModal', animation: 'fade' }} />
+
+        {/* Vendor Screens */}
+        <Stack.Screen name="VendorLogin" component={VendorLoginScreen} />
+        <Stack.Screen name="VendorRegister" component={VendorRegisterScreen} />
+        <Stack.Screen name="VendorDashboard" component={VendorDashboardScreen} />
+        <Stack.Screen name="VendorAddProduct" component={VendorAddProductScreen} />
+        <Stack.Screen name="VendorProducts" component={VendorProductsScreen} />
+        <Stack.Screen name="VendorOrders" component={VendorOrdersScreen} />
+        <Stack.Screen name="VendorAnalytics" component={VendorAnalyticsScreen} />
+        <Stack.Screen name="VendorPayouts" component={VendorPayoutScreen} />
+        <Stack.Screen name="VendorReturns" component={VendorReturnsScreen} />
+        <Stack.Screen name="VendorMessages" component={VendorMessagesScreen} />
+        <Stack.Screen name="VendorProfile" component={VendorProfileScreen} />
+        <Stack.Screen name="VendorStorefront" component={VendorStorefrontScreen} />
+
+        {/* Admin Screens */}
+        <Stack.Screen name="AdminLogin" component={AdminLoginScreen} />
+        <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
+        <Stack.Screen name="AdminCategories" component={AdminCategoriesScreen} />
+        <Stack.Screen name="AdminVendors" component={AdminVendorsScreen} />
+        <Stack.Screen name="AdminCoupons" component={AdminCouponsScreen} />
+        <Stack.Screen name="AdminBanners" component={AdminBannersScreen} />
+        <Stack.Screen name="AdminFinance" component={AdminFinanceScreen} />
+        <Stack.Screen name="AdminSettings" component={AdminSettingsScreen} />
+
+        {/* Feature Screens - Mobile App Specific */}
+        <Stack.Screen name="PushNotifications" component={PushNotificationsScreen} />
+        <Stack.Screen name="InAppChat" component={InAppChatScreen} />
+        <Stack.Screen name="BiometricSetup" component={BiometricSetupScreen} />
+
+        {/* Feature Screens - Advanced/Enterprise */}
+        <Stack.Screen name="SubscriptionPlans" component={SubscriptionPlansScreen} />
+        <Stack.Screen name="MembershipPage" component={MembershipPageScreen} />
+        <Stack.Screen name="LoyaltyProgram" component={LoyaltyProgramScreen} />
+        <Stack.Screen name="GiftCards" component={GiftCardsScreen} />
+        <Stack.Screen name="AffiliateDashboard" component={AffiliateDashboardScreen} />
+        <Stack.Screen name="ReferralProgram" component={ReferralProgramScreen} />
+        <Stack.Screen name="AbandonedCart" component={AbandonedCartScreen} />
+        <Stack.Screen name="AIRecommendations" component={AIRecommendationsScreen} />
+        <Stack.Screen name="CurrencySwitcher" component={CurrencySwitcherScreen} />
+        <Stack.Screen name="LanguageSwitcher" component={LanguageSwitcherScreen} />
+        <Stack.Screen name="AuctionPage" component={AuctionPageScreen} />
+        <Stack.Screen name="PreOrderPage" component={PreOrderPageScreen} />
+        <Stack.Screen name="BackOrderPage" component={PreOrderPageScreen} />
+        <Stack.Screen name="LiveChatSupport" component={BookingPageScreen} />
+        <Stack.Screen name="ChatbotPage" component={AIRecommendationsScreen} />
+
+        {/* Feature Screens - Special Commerce */}
+        <Stack.Screen name="DigitalDownloads" component={DigitalDownloadsScreen} />
+        <Stack.Screen name="LicenseKeyDelivery" component={DigitalDownloadsScreen} />
+        <Stack.Screen name="BookingPage" component={BookingPageScreen} />
+        <Stack.Screen name="RentalProducts" component={RentalProductsScreen} />
+        <Stack.Screen name="WholesalePricing" component={WholesalePricingScreen} />
+        <Stack.Screen name="QuoteRequest" component={WholesalePricingScreen} />
+
+        {/* Feature Screens - Error Pages */}
+        <Stack.Screen name="Error404" component={Error404Screen} />
+        <Stack.Screen name="Error500" component={Error500Screen} />
+        <Stack.Screen name="MaintenanceMode" component={MaintenanceScreen} />
+        <Stack.Screen name="AccessDenied" component={AccessDeniedScreen} />
+        <Stack.Screen name="SessionExpired" component={SessionExpiredScreen} />
       </Stack.Navigator>
       <MiniCart />
     </NavigationContainer>

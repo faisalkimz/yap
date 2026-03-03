@@ -24,13 +24,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: typography.title,
+    fontSize: typography.h2,
     fontWeight: typography.weightBold,
     color: colors.text,
   },
   subtitle: {
     marginTop: 8,
-    fontSize: typography.subtitle,
+    fontSize: typography.bodySmall,
     color: colors.muted,
   },
 });

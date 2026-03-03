@@ -144,6 +144,20 @@ export const SignInScreen: React.FC<Props> = ({ navigation }) => {
                                 <Text style={styles.signUpLink}>Create account</Text>
                             </TouchableOpacity>
                         </View>
+
+                        {/* Vendor Login Link */}
+                        <View style={[styles.footer, { marginTop: 16 }]}>
+                            <Text style={styles.footerText}>Are you a seller? </Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('VendorLogin')}>
+                                <Text style={[styles.signUpLink, { color: colors.primary }]}>Vendor Login</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.footer}>
+                            <Text style={styles.footerText}>Admin? </Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('AdminLogin')}>
+                                <Text style={[styles.signUpLink, { color: colors.primary }]}>Admin Login</Text>
+                            </TouchableOpacity>
+                        </View>
                     </ScrollView>
                 </KeyboardAvoidingView>
             </SafeAreaView>

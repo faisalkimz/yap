@@ -36,7 +36,8 @@ import {
     EyeOff,
     Check
 } from 'lucide-react-native';
-import { colors } from '../theme/colors';
+import { colors, lightColors, darkColors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -219,12 +220,14 @@ export const PaymentMethodsScreen = ({ navigation }: any) => {
 
 // --- Settings ---
 export const SettingsScreen = ({ navigation }: any) => {
+    const { colors, isDark, toggleTheme } = useTheme();
+
     return (
         <SectionLayout title="Settings" navigation={navigation}>
             <Text style={styles.sectionTitle}>Preferences</Text>
             <SettingItem icon={Bell} label="Notifications" />
             <SettingItem icon={Languages} label="Language" value="English" />
-            <SettingItem icon={Moon} label="Dark Mode" isSwitch />
+            <SettingItem icon={Moon} label="Dark Mode" isSwitch switchValue={isDark} onSwitchChange={toggleTheme} />
 
             <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Security & Privacy</Text>
             <SettingItem icon={Lock} label="Change Password" />
@@ -232,7 +235,7 @@ export const SettingsScreen = ({ navigation }: any) => {
             <SettingItem icon={FileText} label="Terms of Service" />
 
             <Text style={[styles.sectionTitle, { marginTop: 32, color: colors.accent }]}>Danger Zone</Text>
-            <TouchableOpacity style={[styles.settingRow, { backgroundColor: '#FFF5F2' }]}>
+            <TouchableOpacity style={[styles.settingRow, { backgroundColor: isDark ? '#3A2A28' : '#FFF5F2' }]}>
                 <View style={styles.settingLeft}>
                     <View style={[styles.settingIcon, { backgroundColor: colors.white }]}>
                         <Trash2 size={20} color={colors.accent} />
@@ -337,7 +340,7 @@ const PaymentCard = ({ brand, last4, exp, isDefault }: any) => (
     </View>
 );
 
-const SettingItem = ({ icon: Icon, label, value, isSwitch, onPress }: any) => (
+const SettingItem = ({ icon: Icon, label, value, isSwitch, switchValue, onSwitchChange, onPress }: any) => (
     <TouchableOpacity
         style={styles.settingRow}
         onPress={onPress}
@@ -351,7 +354,12 @@ const SettingItem = ({ icon: Icon, label, value, isSwitch, onPress }: any) => (
             <Text style={styles.settingLabel}>{label}</Text>
         </View>
         {isSwitch ? (
-            <Switch trackColor={{ false: '#ECECEC', true: '#1C1C1E' }} thumbColor="#FFFFFF" value={false} />
+            <Switch
+                trackColor={{ false: '#ECECEC', true: '#1C1C1E' }}
+                thumbColor="#FFFFFF"
+                value={switchValue}
+                onValueChange={onSwitchChange}
+            />
         ) : (
             <View style={styles.settingRight}>
                 {value && <Text style={styles.settingValue}>{value}</Text>}
