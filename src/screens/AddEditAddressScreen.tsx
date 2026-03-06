@@ -68,10 +68,10 @@ export const AddEditAddressScreen: React.FC<Props> = ({ navigation, route }) => 
 
                     {/* Form */}
                     <View style={styles.form}>
-                        <InputField label="Resident / Receiver" icon={User} placeholder="Full Name" value={name} onChangeText={setName} />
-                        <InputField label="Direct Contact" icon={Phone} placeholder="+44 7890 000000" keyboardType="phone-pad" value={phone} onChangeText={setPhone} />
-                        <InputField label="City / Region" icon={MapPin} placeholder="London" value={city} onChangeText={setCity} />
-                        <InputField label="Street Address" icon={MapPin} placeholder="Building, Street, Area" multiline value={street} onChangeText={setStreet} />
+                        <InputField label="Resident / Receiver" icon={User} placeholder="Full Name" value={name} onChangeText={(t) => setName(sanitizeInput(t))} />
+                        <InputField label="Direct Contact" icon={Phone} placeholder="+44 7890 000000" keyboardType="phone-pad" value={phone} onChangeText={(t) => setPhone(sanitizeInput(t))} />
+                        <InputField label="City / Region" icon={MapPin} placeholder="London" value={city} onChangeText={(t) => setCity(sanitizeInput(t))} />
+                        <InputField label="Street Address" icon={MapPin} placeholder="Building, Street, Area" multiline value={street} onChangeText={(t) => setStreet(sanitizeInput(t))} />
                     </View>
 
                     {/* Default Toggle */}

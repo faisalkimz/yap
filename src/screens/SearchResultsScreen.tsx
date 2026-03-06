@@ -85,7 +85,7 @@ export const SearchResultsScreen: React.FC<Props> = ({ navigation, route }) => {
                             placeholder="Search..."
                             placeholderTextColor="#A0A0A0"
                             value={searchQuery}
-                            onChangeText={setSearchQuery}
+                            onChangeText={(t) => setSearchQuery(sanitizeInput(t))}
                             autoFocus={true}
                         />
                         {searchQuery.length > 0 && (

@@ -54,7 +54,7 @@ export const ResetPasswordScreen: React.FC<Props> = ({ navigation }) => {
                                     placeholderTextColor="#A0A0A0"
                                     secureTextEntry={!showPassword}
                                     value={password}
-                                    onChangeText={setPassword}
+                                    onChangeText={(t) => setPassword(sanitizeInput(t))}
                                 />
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
                                     {showPassword ? <EyeOff size={20} color="#8E8E93" /> : <Eye size={20} color="#8E8E93" />}
@@ -72,7 +72,7 @@ export const ResetPasswordScreen: React.FC<Props> = ({ navigation }) => {
                                     placeholderTextColor="#A0A0A0"
                                     secureTextEntry={!showConfirmPassword}
                                     value={confirmPassword}
-                                    onChangeText={setConfirmPassword}
+                                    onChangeText={(t) => setConfirmPassword(sanitizeInput(t))}
                                 />
                                 <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeBtn}>
                                     {showConfirmPassword ? <EyeOff size={20} color="#8E8E93" /> : <Eye size={20} color="#8E8E93" />}

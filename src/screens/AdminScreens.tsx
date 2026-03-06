@@ -473,7 +473,7 @@ const AdminProducts = ({ navigation }: any) => {
                         placeholder="Search products..."
                         placeholderTextColor={COLORS.gray}
                         value={search}
-                        onChangeText={setSearch}
+                        onChangeText={(t) => setSearch(sanitizeInput(t))}
                     />
                 </View>
             </View>
@@ -642,7 +642,7 @@ export const AdminLoginScreen = ({ navigation }: any) => {
                                     placeholder="admin@yap.com"
                                     placeholderTextColor={COLORS.gray}
                                     value={email}
-                                    onChangeText={setEmail}
+                                    onChangeText={(t) => setEmail(sanitizeInput(t))}
                                     keyboardType="email-address"
                                 />
                             </View>
@@ -657,7 +657,7 @@ export const AdminLoginScreen = ({ navigation }: any) => {
                                     placeholder="••••••••"
                                     placeholderTextColor={COLORS.gray}
                                     value={password}
-                                    onChangeText={setPassword}
+                                    onChangeText={(t) => setPassword(sanitizeInput(t))}
                                     secureTextEntry={!showPassword}
                                 />
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>

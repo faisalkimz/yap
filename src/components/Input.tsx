@@ -12,6 +12,7 @@ import { colors } from '../theme/colors';
 import { spacing } from '../theme/spacing';
 import { Eye, EyeOff } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
+import { sanitizeInput } from '../utils/sanitize';
 
 
 type Props = TextInputProps & {
@@ -56,6 +57,13 @@ export const Input: React.FC<Props> = ({
 
     const shouldHidePassword = secureTextEntry && !isPasswordVisible;
 
+    const handleChangeText = (text: string) => {
+        const sanitized = sanitizeInput(text);
+        if (rest.onChangeText) {
+            rest.onChangeText(sanitized);
+        }
+    };
+
     return (
         <View style={styles.container}>
             {label && (
@@ -87,6 +95,7 @@ export const Input: React.FC<Props> = ({
                     onBlur={handleBlur}
                     secureTextEntry={shouldHidePassword}
                     {...rest}
+                    onChangeText={handleChangeText}
                 />
 
                 {secureTextEntry && (

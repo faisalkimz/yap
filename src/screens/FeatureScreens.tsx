@@ -342,7 +342,7 @@ export const InAppChatScreen = ({ navigation }: any) => {
                         placeholder="Type a message..."
                         placeholderTextColor={COLORS.gray}
                         value={inputText}
-                        onChangeText={setInputText}
+                        onChangeText={(t) => setInputText(sanitizeInput(t))}
                     />
                     <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
                         <MessageCircle size={20} color={COLORS.white} />

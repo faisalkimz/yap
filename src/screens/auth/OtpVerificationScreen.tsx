@@ -14,6 +14,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../navigation/types';
 import { ChevronLeft } from 'lucide-react-native';
+import { sanitizeInput } from '../../utils/sanitize';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OtpVerification'>;
 
@@ -21,7 +22,8 @@ export const OtpVerificationScreen: React.FC<Props> = ({ navigation }) => {
     const [code, setCode] = useState(['', '', '', '']);
     const inputs = useRef<Array<TextInput | null>>([]);
 
-    const handleInput = (text: string, index: number) => {
+    const handleInput = (rawText: string, index: number) => {
+        const text = sanitizeInput(rawText);
         const newCode = [...code];
         newCode[index] = text;
         setCode(newCode);

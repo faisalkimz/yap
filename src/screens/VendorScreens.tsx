@@ -583,7 +583,7 @@ const ProductsList = ({ navigation }: any) => {
                         placeholder="Search products..."
                         placeholderTextColor={COLORS.gray}
                         value={search}
-                        onChangeText={setSearch}
+                        onChangeText={(t) => setSearch(sanitizeInput(t))}
                     />
                 </View>
                 <TouchableOpacity style={styles.filterButton} onPress={() => setShowFilters(!showFilters)}>
@@ -837,7 +837,7 @@ export const VendorLoginScreen = ({ navigation }: any) => {
                                     placeholder="vendor@email.com"
                                     placeholderTextColor={COLORS.gray}
                                     value={email}
-                                    onChangeText={setEmail}
+                                    onChangeText={(t) => setEmail(sanitizeInput(t))}
                                     keyboardType="email-address"
                                 />
                             </View>
@@ -852,7 +852,7 @@ export const VendorLoginScreen = ({ navigation }: any) => {
                                     placeholder="••••••••"
                                     placeholderTextColor={COLORS.gray}
                                     value={password}
-                                    onChangeText={setPassword}
+                                    onChangeText={(t) => setPassword(sanitizeInput(t))}
                                     secureTextEntry={!showPassword}
                                 />
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -928,7 +928,7 @@ export const VendorRegisterScreen = ({ navigation }: any) => {
                                     placeholder="Your store name"
                                     placeholderTextColor={COLORS.gray}
                                     value={storeName}
-                                    onChangeText={setStoreName}
+                                    onChangeText={(t) => setStoreName(sanitizeInput(t))}
                                 />
                             </View>
                         </View>
@@ -942,7 +942,7 @@ export const VendorRegisterScreen = ({ navigation }: any) => {
                                     placeholder="vendor@email.com"
                                     placeholderTextColor={COLORS.gray}
                                     value={email}
-                                    onChangeText={setEmail}
+                                    onChangeText={(t) => setEmail(sanitizeInput(t))}
                                     keyboardType="email-address"
                                 />
                             </View>
@@ -957,7 +957,7 @@ export const VendorRegisterScreen = ({ navigation }: any) => {
                                     placeholder="+44 7890 123456"
                                     placeholderTextColor={COLORS.gray}
                                     value={phone}
-                                    onChangeText={setPhone}
+                                    onChangeText={(t) => setPhone(sanitizeInput(t))}
                                     keyboardType="phone-pad"
                                 />
                             </View>
@@ -972,7 +972,7 @@ export const VendorRegisterScreen = ({ navigation }: any) => {
                                     placeholder="e.g., Fashion, Electronics"
                                     placeholderTextColor={COLORS.gray}
                                     value={category}
-                                    onChangeText={setCategory}
+                                    onChangeText={(t) => setCategory(sanitizeInput(t))}
                                 />
                             </View>
                         </View>
@@ -1047,7 +1047,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                 placeholder="Enter product name"
                                 placeholderTextColor={COLORS.gray}
                                 value={name}
-                                onChangeText={setName}
+                                onChangeText={(t) => setName(sanitizeInput(t))}
                             />
                         </View>
 
@@ -1059,7 +1059,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                     placeholder="0.00"
                                     placeholderTextColor={COLORS.gray}
                                     value={price}
-                                    onChangeText={setPrice}
+                                    onChangeText={(t) => setPrice(sanitizeInput(t))}
                                     keyboardType="numeric"
                                 />
                             </View>
@@ -1071,7 +1071,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                     placeholder="0"
                                     placeholderTextColor={COLORS.gray}
                                     value={stock}
-                                    onChangeText={setStock}
+                                    onChangeText={(t) => setStock(sanitizeInput(t))}
                                     keyboardType="numeric"
                                 />
                             </View>
@@ -1085,7 +1085,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                     placeholder="SKU-001"
                                     placeholderTextColor={COLORS.gray}
                                     value={sku}
-                                    onChangeText={setSku}
+                                    onChangeText={(t) => setSku(sanitizeInput(t))}
                                 />
                             </View>
                             <View style={{ width: 16 }} />
@@ -1096,7 +1096,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                     placeholder="0.5kg"
                                     placeholderTextColor={COLORS.gray}
                                     value={weight}
-                                    onChangeText={setWeight}
+                                    onChangeText={(t) => setWeight(sanitizeInput(t))}
                                 />
                             </View>
                         </View>
@@ -1108,7 +1108,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                 placeholder="Select category"
                                 placeholderTextColor={COLORS.gray}
                                 value={category}
-                                onChangeText={setCategory}
+                                onChangeText={(t) => setCategory(sanitizeInput(t))}
                             />
                         </View>
 
@@ -1119,7 +1119,7 @@ export const VendorAddProductScreen = ({ navigation, route }: any) => {
                                 placeholder="Product description..."
                                 placeholderTextColor={COLORS.gray}
                                 value={description}
-                                onChangeText={setDescription}
+                                onChangeText={(t) => setDescription(sanitizeInput(t))}
                                 multiline
                                 numberOfLines={4}
                             />
@@ -1332,7 +1332,7 @@ export const VendorPayoutScreen = ({ navigation }: any) => {
                                     placeholder="Enter amount"
                                     placeholderTextColor={COLORS.gray}
                                     value={withdrawAmount}
-                                    onChangeText={setWithdrawAmount}
+                                    onChangeText={(t) => setWithdrawAmount(sanitizeInput(t))}
                                     keyboardType="numeric"
                                 />
                                 <View style={styles.withdrawPresets}>

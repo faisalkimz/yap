@@ -81,7 +81,7 @@ export const WriteReviewScreen: React.FC<Props> = ({ navigation }) => {
                             multiline
                             numberOfLines={6}
                             value={comment}
-                            onChangeText={setComment}
+                            onChangeText={(t) => setComment(sanitizeInput(t))}
                         />
 
                         <Text style={[styles.sectionTitle, { marginTop: 32 }]}>Add Photos</Text>

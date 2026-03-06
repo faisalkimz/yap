@@ -52,7 +52,7 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
                                     keyboardType="email-address"
                                     autoCapitalize="none"
                                     value={email}
-                                    onChangeText={setEmail}
+                                    onChangeText={(t) => setEmail(sanitizeInput(t))}
                                 />
                             </View>
                         </View>
