@@ -53,70 +53,18 @@ const COLLECTIONS = [
     { id: '2', name: 'Tailored Suiting', label: 'SIGNATURES', image: 'https://images.unsplash.com/photo-1594932224528-a4603e236124?w=800&q=80' },
 ];
 
-const FEATURED_PRODUCTS = [
-    {
-        id: '1',
-        name: 'Velvet Evening Blazer',
-        price: '£420.00',
-        rating: '4.9',
-        image: 'https://images.unsplash.com/photo-1594932224528-a4603e236124?w=800&q=80',
-        category: 'Formal'
-    },
-    {
-        id: '2',
-        name: 'Obsidian Leather boots',
-        price: '£310.00',
-        rating: '4.8',
-        image: 'https://images.unsplash.com/photo-1638247025967-b4e38f6893b4?w=800&q=80',
-        category: 'Footwear'
-    },
-    {
-        id: '101',
-        name: 'Mulberry Silk Shirt',
-        price: '£215.00',
-        rating: '4.7',
-        image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80',
-        category: 'Heritage'
-    },
-    {
-        id: '102',
-        name: 'Technical Trench',
-        price: '£890.00',
-        rating: '5.0',
-        image: 'https://images.unsplash.com/photo-1539533397341-3927b4c74bb6?w=800&q=80',
-        category: 'Winter'
-    }
-];
-
-const DEALS_PRODUCTS = [
-    { id: 'd1', name: 'Silk Pocket Square', price: '£45.00', image: 'https://images.unsplash.com/photo-1589131669922-094186541f6c?w=400&q=80' },
-    { id: 'd2', name: 'Cashmere Beanie', price: '£85.00', image: 'https://images.unsplash.com/photo-1543062229-3300bfd03611?w=400&q=80' },
-    { id: 'd3', name: 'Leather Belt', price: '£120.00', image: 'https://images.unsplash.com/photo-1554992259-ce0435166f27?w=400&q=80' },
-];
-
-const CURATED_PRODUCTS = [
-    { id: 'c1', name: 'Alabaster Silk Dress', price: '£890.00', rating: '5.0', image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&q=80', category: 'Evening' },
-    { id: 'c2', name: 'Ivory Tailored Trousers', price: '£450.00', rating: '4.8', image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800&q=80', category: 'Business' },
-];
-
-const MUST_HAVES = [
-    { id: 'm1', name: 'Gold Signet Ring', price: '£1,200.00', image: 'https://images.unsplash.com/photo-1622398476015-514e24ef98a1?w=400&q=80' },
-    { id: 'm2', name: 'Linen Overshirt', price: '£180.00', image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&q=80' },
-    { id: 'm3', name: 'Leather Portfolio', price: '£350.00', image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&q=80' },
-];
-
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const { isFavorite, toggleFavorite } = useFavorites();
     const { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed } = useCart();
     const [activeCategory, setActiveCategory] = useState('1');
-    const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
+    const [allProducts, setAllProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 const data = await api.get('/products');
-                setTrendingProducts(data);
+                setAllProducts(data);
             } catch (error) {
                 console.error('Failed to fetch products:', error);
             } finally {
@@ -126,43 +74,59 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         fetchProducts();
     }, []);
 
-    const renderProduct = (product: typeof FEATURED_PRODUCTS[0], index: number) => (
-        <TouchableOpacity
-            key={product.id}
-            style={[styles.productCard, index % 2 === 0 ? { marginLeft: 24 } : { marginRight: 24 }]}
-            activeOpacity={0.9}
-            onPress={() => {
-                navigation.navigate('ProductDetails', { product: product as any });
-                addToRecentlyViewed(product as any);
-            }}
-        >
-            <View style={styles.imageBox}>
-                <Image source={{ uri: product.image }} style={styles.productImg} />
-                <TouchableOpacity
-                    style={styles.cardFav}
-                    onPress={() => toggleFavorite(product as any)}
-                >
-                    <Heart
-                        size={18}
-                        color={isFavorite(product.id) ? colors.accent : colors.secondary}
-                        fill={isFavorite(product.id) ? colors.accent : 'transparent'}
-                    />
-                </TouchableOpacity>
-                <View style={styles.ratingBadge}>
-                    <Star size={10} color="#FFCC00" fill="#FFCC00" />
-                    <Text style={styles.ratingVal}>{product.rating}</Text>
+    // Dynamically derive sections from real data
+    const featuredProducts = allProducts.slice(0, 4);
+    const curatedProducts = allProducts.slice(4, 6);
+    const flashDeals = allProducts.filter(p => p.price < 50000).slice(0, 3);
+    const mustHaves = allProducts.slice(2, 5);
+
+    const renderProduct = (item: any, index: number) => {
+        // Handle Mongoose _id and data normalization
+        const product = {
+            ...item,
+            id: item._id || item.id,
+            price: typeof item.price === 'number' ? `GX ${item.price.toLocaleString()}` : item.price,
+            rating: item.rating || '4.5'
+        };
+
+        return (
+            <TouchableOpacity
+                key={product.id}
+                style={[styles.productCard, index % 2 === 0 ? { marginLeft: 24 } : { marginRight: 24 }]}
+                activeOpacity={0.9}
+                onPress={() => {
+                    navigation.navigate('ProductDetails', { product: product as any });
+                    addToRecentlyViewed(product as any);
+                }}
+            >
+                <View style={styles.imageBox}>
+                    <Image source={{ uri: product.image }} style={styles.productImg} />
+                    <TouchableOpacity
+                        style={styles.cardFav}
+                        onPress={() => toggleFavorite(product as any)}
+                    >
+                        <Heart
+                            size={18}
+                            color={isFavorite(product.id) ? colors.accent : colors.secondary}
+                            fill={isFavorite(product.id) ? colors.accent : 'transparent'}
+                        />
+                    </TouchableOpacity>
+                    <View style={styles.ratingBadge}>
+                        <Star size={10} color="#FFCC00" fill="#FFCC00" />
+                        <Text style={styles.ratingVal}>{product.rating}</Text>
+                    </View>
                 </View>
-            </View>
-            <Text style={styles.cardCat}>{product.category}</Text>
-            <Text style={styles.cardName} numberOfLines={1}>{product.name}</Text>
-            <View style={styles.cardPriceRow}>
-                <Text style={styles.cardPrice}>{product.price}</Text>
-                <TouchableOpacity style={styles.addGhost}>
-                    <Plus size={16} color={colors.secondary} />
-                </TouchableOpacity>
-            </View>
-        </TouchableOpacity>
-    );
+                <Text style={styles.cardCat}>{product.category}</Text>
+                <Text style={styles.cardName} numberOfLines={1}>{product.name}</Text>
+                <View style={styles.cardPriceRow}>
+                    <Text style={styles.cardPrice}>{product.price}</Text>
+                    <TouchableOpacity style={styles.addGhost}>
+                        <Plus size={16} color={colors.secondary} />
+                    </TouchableOpacity>
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
     const renderRecentItem = (product: any) => (
         <TouchableOpacity
@@ -293,8 +257,12 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                             <View style={{ padding: 40, width: '100%', alignItems: 'center' }}>
                                 <Text style={{ fontSize: 13, fontWeight: '800', color: colors.muted }}>REFRESHING RELEASES...</Text>
                             </View>
+                        ) : allProducts.length > 0 ? (
+                            featuredProducts.map((p, idx) => renderProduct(p, idx))
                         ) : (
-                            trendingProducts.map((p, idx) => renderProduct(p, idx))
+                            <View style={{ padding: 40, width: '100%', alignItems: 'center' }}>
+                                <Text style={{ fontSize: 14, fontWeight: '600', color: colors.muted }}>Our new collection is coming soon.</Text>
+                            </View>
                         )}
                     </View>
 
@@ -307,7 +275,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         <Text style={styles.dealTimer}>ENDS IN 04:22:10</Text>
                     </View>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recentScroll}>
-                        {DEALS_PRODUCTS.map(renderRecentItem)}
+                        {flashDeals.map(renderRecentItem)}
                     </ScrollView>
 
                     {/* Curated for You */}
@@ -318,7 +286,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         </View>
                     </View>
                     <View style={styles.curatedGrid}>
-                        {CURATED_PRODUCTS.map((p, idx) => renderProduct(p, idx))}
+                        {curatedProducts.map((p, idx) => renderProduct(p, idx))}
                     </View>
 
                     {/* Must Haves */}
@@ -329,7 +297,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         </View>
                     </View>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recentScroll}>
-                        {MUST_HAVES.map(renderRecentItem)}
+                        {mustHaves.map(renderRecentItem)}
                     </ScrollView>
 
                     {recentlyViewed.length > 0 && (

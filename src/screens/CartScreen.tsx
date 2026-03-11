@@ -33,66 +33,42 @@ const { width } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Cart'>;
 
-const INITIAL_CART_ITEMS = [
-    {
-        id: '1',
-        name: 'Mulberry Silk Blouse',
-        type: 'Signature Silk',
-        price: 280,
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80',
-        qty: 1,
-    },
-    {
-        id: '2',
-        name: 'Titanium Slim Trouser',
-        type: 'Architectural',
-        price: 450,
-        image: 'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=800&q=80',
-        qty: 1,
-    }
-];
+import { useCart } from '../context/CartContext';
 
 export const CartScreen: React.FC<Props> = ({ navigation }) => {
-    const [cartItems, setCartItems] = useState(INITIAL_CART_ITEMS);
+    const { cartItems, updateQuantity, removeFromCart } = useCart();
 
-    const updateQty = (id: string, delta: number) => {
-        setCartItems(items => items.map(item => {
-            if (item.id === id) {
-                const newQty = Math.max(1, item.qty + delta);
-                return { ...item, qty: newQty };
-            }
-            return item;
-        }));
-    };
+    const subtotal = cartItems.reduce((sum, item) => {
+        const price = typeof item.price === 'number' ? item.price : parseFloat(String(item.price).replace(/[^\d.]/g, '')) || 0;
+        return sum + (price * item.quantity);
+    }, 0);
 
-    const removeItem = (id: string) => {
-        setCartItems(items => items.filter(item => item.id !== id));
-    };
-
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const tax = subtotal * 0.15;
+    const tax = subtotal * 0.05; // 5% Bantu Tax
     const total = subtotal + tax;
 
-    const renderItem = (item: typeof INITIAL_CART_ITEMS[0]) => (
+    const renderItem = (item: any) => (
         <View style={styles.cartItem} key={item.id}>
             <Image source={{ uri: item.image }} style={styles.itemThumb} />
             <View style={styles.itemCore}>
-                <Text style={styles.itemTag}>{item.type}</Text>
+                <Text style={styles.itemTag}>{item.category || 'SIGNATURE'}</Text>
                 <Text style={styles.itemName}>{item.name}</Text>
+                {item.selectedSize && <Text style={[styles.itemTag, { marginTop: -10, marginBottom: 10 }]}>SIZE: {item.selectedSize}</Text>}
 
                 <View style={styles.qtyBox}>
-                    <TouchableOpacity onPress={() => updateQty(item.id, -1)} style={styles.qtyBtn}>
+                    <TouchableOpacity onPress={() => updateQuantity(item.id, -1)} style={styles.qtyBtn}>
                         <Minus size={16} color="#1C1C1E" strokeWidth={1} />
                     </TouchableOpacity>
-                    <Text style={styles.qtyVal}>{item.qty}</Text>
-                    <TouchableOpacity onPress={() => updateQty(item.id, 1)} style={styles.qtyBtn}>
+                    <Text style={styles.qtyVal}>{item.quantity}</Text>
+                    <TouchableOpacity onPress={() => updateQuantity(item.id, 1)} style={styles.qtyBtn}>
                         <Plus size={16} color="#1C1C1E" strokeWidth={1} />
                     </TouchableOpacity>
                 </View>
             </View>
             <View style={styles.itemRight}>
-                <Text style={styles.itemPrice}>£{item.price}</Text>
-                <TouchableOpacity onPress={() => removeItem(item.id)} style={styles.deleteBtn}>
+                <Text style={styles.itemPrice}>
+                    GX {(typeof item.price === 'number' ? item.price : 0).toLocaleString()}
+                </Text>
+                <TouchableOpacity onPress={() => removeFromCart(item.id)} style={styles.deleteBtn}>
                     <Trash2 size={18} color="#8E8E93" strokeWidth={1.5} />
                 </TouchableOpacity>
             </View>
@@ -144,16 +120,16 @@ export const CartScreen: React.FC<Props> = ({ navigation }) => {
                             <View style={styles.summaryCard}>
                                 <View style={styles.sumRow}>
                                     <Text style={styles.sumLabel}>SUBTOTAL</Text>
-                                    <Text style={styles.sumVal}>£{subtotal.toFixed(2)}</Text>
+                                    <Text style={styles.sumVal}>GX {subtotal.toLocaleString()}</Text>
                                 </View>
                                 <View style={styles.sumRow}>
-                                    <Text style={styles.sumLabel}>ESTIMATED TAX</Text>
-                                    <Text style={styles.sumVal}>£{tax.toFixed(2)}</Text>
+                                    <Text style={styles.sumLabel}>ESTIMATED TAX (5%)</Text>
+                                    <Text style={styles.sumVal}>GX {tax.toLocaleString()}</Text>
                                 </View>
                                 <View style={styles.sumDivider} />
                                 <View style={styles.totalRow}>
-                                    <Text style={styles.totalLabel}>TOTAL</Text>
-                                    <Text style={styles.totalVal}>£{total.toFixed(2)}</Text>
+                                    <Text style={styles.totalLabel}>TOTAL DUE</Text>
+                                    <Text style={styles.totalVal}>GX {total.toLocaleString()}</Text>
                                 </View>
                             </View>
                         </View>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -16,6 +16,9 @@ import {
     Modal,
 } from 'react-native';
 import { sanitizeInput } from '../utils/sanitize';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
+import { ActivityIndicator, RefreshControl } from 'react-native';
 import {
     ChevronLeft,
     Store,
@@ -106,93 +109,6 @@ const COLORS = {
     teal: '#14B8A6',
 };
 
-// --- Mock Data ---
-const ADMIN_STATS = {
-    totalRevenue: 456780,
-    totalOrders: 12845,
-    totalCustomers: 8934,
-    totalVendors: 156,
-};
-
-const CUSTOMERS = [
-    { id: '1', name: 'John Smith', email: 'john@example.com', phone: '+44 7890 123456', orders: 12, spent: 2450, joined: 'Jan 2024', status: 'active' },
-    { id: '2', name: 'Emma Wilson', email: 'emma@example.com', phone: '+44 7891 234567', orders: 8, spent: 1890, joined: 'Feb 2024', status: 'active' },
-    { id: '3', name: 'Michael Brown', email: 'michael@example.com', phone: '+44 7892 345678', orders: 5, spent: 890, joined: 'Mar 2024', status: 'active' },
-    { id: '4', name: 'Sarah Davis', email: 'sarah@example.com', phone: '+44 7893 456789', orders: 15, spent: 3200, joined: 'Dec 2023', status: 'active' },
-    { id: '5', name: 'James Johnson', email: 'james@example.com', phone: '+44 7894 567890', orders: 3, spent: 450, joined: 'Apr 2024', status: 'inactive' },
-];
-
-const VENDORS = [
-    { id: '1', storeName: 'Luxe Fashion', owner: 'John Doe', email: 'luxe@example.com', products: 45, sales: 2340, revenue: 156000, status: 'active', joined: 'Jan 2024' },
-    { id: '2', storeName: 'Tech Hub', owner: 'Sarah Wilson', email: 'tech@example.com', products: 120, sales: 5670, revenue: 234000, status: 'active', joined: 'Nov 2023' },
-    { id: '3', storeName: 'Home Essentials', owner: 'Mike Brown', email: 'home@example.com', products: 89, sales: 1890, revenue: 89000, status: 'active', joined: 'Feb 2024' },
-    { id: '4', storeName: 'Beauty Store', owner: 'Emma Davis', email: 'beauty@example.com', products: 67, sales: 1230, revenue: 67000, status: 'pending', joined: 'Mar 2024' },
-    { id: '5', storeName: 'Sports World', owner: 'James Wilson', email: 'sports@example.com', products: 156, sales: 3450, revenue: 189000, status: 'suspended', joined: 'Oct 2023' },
-];
-
-const ADMIN_USERS = [
-    { id: '1', name: 'Super Admin', email: 'admin@bantu.creations', role: 'Super Admin', lastLogin: 'Today, 10:30 AM', status: 'active' },
-    { id: '2', name: 'Order Manager', email: 'orders@bantu.creations', role: 'Order Manager', lastLogin: 'Yesterday', status: 'active' },
-    { id: '3', name: 'Product Manager', email: 'products@bantu.creations', role: 'Product Manager', lastLogin: '2 days ago', status: 'active' },
-    { id: '4', name: 'Support Staff', email: 'support@bantu.creations', role: 'Support', lastLogin: '3 days ago', status: 'active' },
-];
-
-const ALL_ORDERS = [
-    { id: 'ORD-8921', customer: 'John Smith', vendor: 'Luxe Fashion', items: 2, amount: 890, date: 'Today, 2:30 PM', status: 'processing', payment: 'paid' },
-    { id: 'ORD-8920', customer: 'Emma Wilson', vendor: 'Tech Hub', items: 1, amount: 1299, date: 'Today, 11:45 AM', status: 'shipped', payment: 'paid' },
-    { id: 'ORD-8919', customer: 'Michael Brown', vendor: 'Home Essentials', items: 3, amount: 456, date: 'Yesterday', status: 'delivered', payment: 'paid' },
-    { id: 'ORD-8918', customer: 'Sarah Davis', vendor: 'Beauty Store', items: 2, amount: 1780, date: 'Yesterday', status: 'delivered', payment: 'paid' },
-    { id: 'ORD-8917', customer: 'James Johnson', vendor: 'Sports World', items: 1, amount: 340, date: 'Feb 14', status: 'cancelled', payment: 'refunded' },
-    { id: 'ORD-8916', customer: 'Lisa Chen', vendor: 'Luxe Fashion', items: 4, amount: 2340, date: 'Feb 13', status: 'pending', payment: 'pending' },
-];
-
-const PRODUCTS = [
-    { id: '1', name: 'Premium Silk Gown', vendor: 'Luxe Fashion', category: 'Dresses', price: 450, stock: 25, sold: 156, status: 'active' },
-    { id: '2', name: 'iPhone 15 Pro', vendor: 'Tech Hub', category: 'Electronics', price: 999, stock: 50, sold: 234, status: 'active' },
-    { id: '3', name: 'Designer Handbag', vendor: 'Luxe Fashion', category: 'Accessories', price: 890, stock: 15, sold: 89, status: 'active' },
-    { id: '4', name: 'Wireless Earbuds', vendor: 'Tech Hub', category: 'Electronics', price: 199, stock: 0, sold: 567, status: 'out_of_stock' },
-    { id: '5', name: 'Yoga Mat', vendor: 'Sports World', category: 'Sports', price: 45, stock: 120, sold: 234, status: 'active' },
-    { id: '6', name: 'Face Cream', vendor: 'Beauty Store', category: 'Beauty', price: 89, stock: 80, sold: 145, status: 'active' },
-];
-
-const CATEGORIES = [
-    { id: '1', name: 'Fashion', products: 1234, subcategories: 8, icon: '👗' },
-    { id: '2', name: 'Electronics', products: 856, subcategories: 12, icon: '📱' },
-    { id: '3', name: 'Home & Garden', products: 654, subcategories: 10, icon: '🏠' },
-    { id: '4', name: 'Beauty', products: 432, subcategories: 6, icon: '💄' },
-    { id: '5', name: 'Sports', products: 321, subcategories: 5, icon: '⚽' },
-    { id: '6', name: 'Books', products: 543, subcategories: 4, icon: '📚' },
-];
-
-const BANNERS = [
-    { id: '1', title: 'Summer Sale', image: 'banner1', status: 'active', order: 1 },
-    { id: '2', title: 'New Arrivals', image: 'banner2', status: 'active', order: 2 },
-    { id: '3', title: 'Free Shipping', image: 'banner3', status: 'inactive', order: 3 },
-];
-
-const COUPONS = [
-    { id: '1', code: 'SUMMER20', discount: '20%', minOrder: 100, usage: 234, limit: 500, expires: 'Aug 31, 2026', status: 'active' },
-    { id: '2', code: 'NEW50', discount: '£50', minOrder: 200, usage: 89, limit: 200, expires: 'Sep 30, 2026', status: 'active' },
-    { id: '3', code: 'FLASH10', discount: '10%', minOrder: 50, usage: 456, limit: 1000, expires: 'Jul 15, 2026', status: 'expired' },
-];
-
-const TRANSACTIONS = [
-    { id: '1', type: 'order', amount: 890, orderId: 'ORD-8921', vendor: 'Luxe Fashion', date: 'Today', status: 'completed' },
-    { id: '2', type: 'order', amount: 1299, orderId: 'ORD-8920', vendor: 'Tech Hub', date: 'Today', status: 'completed' },
-    { id: '3', type: 'payout', amount: 5000, vendor: 'Luxe Fashion', date: 'Yesterday', status: 'completed' },
-    { id: '4', type: 'refund', amount: 340, orderId: 'ORD-8917', vendor: 'Sports World', date: 'Feb 14', status: 'completed' },
-    { id: '5', type: 'payout', amount: 3000, vendor: 'Tech Hub', date: 'Feb 12', status: 'pending' },
-];
-
-const SALES_DATA = [
-    { month: 'Jan', sales: 45000, revenue: 125000 },
-    { month: 'Feb', sales: 52000, revenue: 158000 },
-    { month: 'Mar', sales: 48000, revenue: 142000 },
-    { month: 'Apr', sales: 61000, revenue: 189000 },
-    { month: 'May', sales: 55000, revenue: 165000 },
-    { month: 'Jun', sales: 67000, revenue: 215000 },
-];
-
 // --- Components ---
 const StatusBadge = ({ status }: { status: string }) => {
     const getColors = () => {
@@ -226,14 +142,46 @@ const StatusBadge = ({ status }: { status: string }) => {
 // =====================================================
 export const AdminDashboardScreen = ({ navigation }: any) => {
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [stats, setStats] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const fetchStats = async () => {
+        try {
+            const data = await api.get('/admin/stats');
+            setStats(data);
+        } catch (error) {
+            console.error('Failed to fetch admin stats:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchStats();
+    };
 
     const renderContent = () => {
+        if (loading && !refreshing) {
+            return (
+                <View style={styles.loadingCenter}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                </View>
+            );
+        }
+
         switch (activeTab) {
-            case 'dashboard': return <AdminHome navigation={navigation} />;
+            case 'dashboard': return <AdminHome navigation={navigation} stats={stats} refreshing={refreshing} onRefresh={onRefresh} />;
             case 'orders': return <AdminOrders navigation={navigation} />;
             case 'products': return <AdminProducts navigation={navigation} />;
             case 'users': return <AdminUsers navigation={navigation} />;
-            default: return <AdminHome navigation={navigation} />;
+            default: return <AdminHome navigation={navigation} stats={stats} refreshing={refreshing} onRefresh={onRefresh} />;
         }
     };
 
@@ -286,74 +234,50 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
 };
 
 // --- Admin Home Content ---
-const AdminHome = ({ navigation }: any) => (
-    <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+const AdminHome = ({ navigation, stats, refreshing, onRefresh }: any) => (
+    <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
+        }
+    >
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
             <View style={styles.statsRow}>
                 <View style={[styles.statCard, { backgroundColor: COLORS.success }]}>
                     <DollarSign size={24} color={COLORS.white} />
-                    <Text style={styles.statValue}>£{ADMIN_STATS.totalRevenue.toLocaleString()}</Text>
+                    <Text style={styles.statValue}>£{(stats?.stats?.totalRevenue || 0).toLocaleString()}</Text>
                     <Text style={styles.statLabel}>Total Revenue</Text>
                 </View>
                 <View style={[styles.statCard, { backgroundColor: COLORS.blue }]}>
                     <ShoppingCart size={24} color={COLORS.white} />
-                    <Text style={styles.statValue}>{ADMIN_STATS.totalOrders.toLocaleString()}</Text>
+                    <Text style={styles.statValue}>{(stats?.stats?.totalOrders || 0).toLocaleString()}</Text>
                     <Text style={styles.statLabel}>Total Orders</Text>
                 </View>
             </View>
             <View style={styles.statsRow}>
                 <View style={[styles.statCard, { backgroundColor: COLORS.purple }]}>
                     <Users size={24} color={COLORS.white} />
-                    <Text style={styles.statValue}>{ADMIN_STATS.totalCustomers.toLocaleString()}</Text>
+                    <Text style={styles.statValue}>{(stats?.stats?.totalUsers || 0).toLocaleString()}</Text>
                     <Text style={styles.statLabel}>Customers</Text>
                 </View>
                 <View style={[styles.statCard, { backgroundColor: COLORS.gold }]}>
                     <Store size={24} color={COLORS.white} />
-                    <Text style={styles.statValue}>{ADMIN_STATS.totalVendors}</Text>
+                    <Text style={styles.statValue}>{stats?.stats?.totalVendors || 0}</Text>
                     <Text style={styles.statLabel}>Vendors</Text>
                 </View>
             </View>
         </View>
 
         {/* Quick Links */}
-        <Text style={styles.sectionTitle}>MANAGE</Text>
+        <Text style={styles.sectionTitle}>BUSINESS SETTINGS</Text>
         <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('AdminCategories')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: COLORS.pink + '20' }]}>
-                    <Layers size={22} color={COLORS.pink} />
-                </View>
-                <Text style={styles.quickActionLabel}>Categories</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('AdminVendors')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: COLORS.blue + '20' }]}>
-                    <Store size={22} color={COLORS.blue} />
-                </View>
-                <Text style={styles.quickActionLabel}>Vendors</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('AdminCoupons')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: COLORS.gold + '20' }]}>
-                    <Gift size={22} color={COLORS.gold} />
-                </View>
-                <Text style={styles.quickActionLabel}>Coupons</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('AdminSettings')}>
                 <View style={[styles.quickActionIcon, { backgroundColor: COLORS.gray + '20' }]}>
                     <Settings size={22} color={COLORS.gray} />
                 </View>
-                <Text style={styles.quickActionLabel}>Settings</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('AdminBanners')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: COLORS.purple + '20' }]}>
-                    <ImageIcon size={22} color={COLORS.purple} />
-                </View>
-                <Text style={styles.quickActionLabel}>Banners</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickAction} onPress={() => navigation.navigate('AdminFinance')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: COLORS.success + '20' }]}>
-                    <Wallet size={22} color={COLORS.success} />
-                </View>
-                <Text style={styles.quickActionLabel}>Finance</Text>
+                <Text style={styles.quickActionLabel}>Platform</Text>
             </TouchableOpacity>
         </View>
 
@@ -365,39 +289,35 @@ const AdminHome = ({ navigation }: any) => (
             </TouchableOpacity>
         </View>
 
-        {ALL_ORDERS.slice(0, 3).map((order) => (
-            <View key={order.id} style={styles.orderCard}>
-                <View style={styles.orderLeft}>
-                    <View style={[styles.orderIcon, { backgroundColor: COLORS.dark3 }]}>
-                        <ShoppingCart size={18} color={COLORS.white} />
+        {stats?.recentOrders?.length > 0 ? (
+            stats.recentOrders.map((order: any) => (
+                <TouchableOpacity
+                    key={order._id}
+                    style={styles.orderCard}
+                    onPress={() => navigation.navigate('AdminOrderDetails', { orderId: order._id })}
+                >
+                    <View style={styles.orderLeft}>
+                        <View style={[styles.orderIcon, { backgroundColor: COLORS.dark3 }]}>
+                            <ShoppingCart size={18} color={COLORS.white} />
+                        </View>
+                        <View style={styles.orderInfo}>
+                            <Text style={styles.orderId}>ORD-{order._id.slice(-6).toUpperCase()}</Text>
+                            <Text style={styles.orderCustomer}>{order.userId?.name || 'Guest'} • {order.items?.length || 0} items</Text>
+                        </View>
                     </View>
-                    <View style={styles.orderInfo}>
-                        <Text style={styles.orderId}>{order.id}</Text>
-                        <Text style={styles.orderCustomer}>{order.customer} • {order.vendor}</Text>
+                    <View style={styles.orderRight}>
+                        <Text style={styles.orderAmount}>GX {order.totalAmount?.toLocaleString()}</Text>
+                        <StatusBadge status={order.status} />
                     </View>
-                </View>
-                <View style={styles.orderRight}>
-                    <Text style={styles.orderAmount}>£{order.amount}</Text>
-                    <StatusBadge status={order.status} />
-                </View>
+                </TouchableOpacity>
+            ))
+        ) : (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+                <Text style={{ color: COLORS.gray }}>No recent orders</Text>
             </View>
-        ))}
+        )}
 
-        {/* Revenue Chart Placeholder */}
-        <Text style={styles.sectionTitle}>REVENUE TREND</Text>
-        <View style={styles.chartCard}>
-            {SALES_DATA.map((data, index) => (
-                <View key={index} style={styles.chartRow}>
-                    <Text style={styles.chartMonth}>{data.month}</Text>
-                    <View style={styles.chartBar}>
-                        <View style={[styles.chartBarFill, { width: `${(data.revenue / 250000) * 100}%` }]} />
-                    </View>
-                    <Text style={styles.chartValue}>£{(data.revenue / 1000).toFixed(0)}k</Text>
-                </View>
-            ))}
-        </View>
-
-        <View style={{ height: 20 }} />
+        <View style={{ height: 100 }} />
     </ScrollView>
 );
 
@@ -406,9 +326,28 @@ const AdminHome = ({ navigation }: any) => (
 // =====================================================
 const AdminOrders = ({ navigation }: any) => {
     const [filter, setFilter] = useState('all');
+    const [orders, setOrders] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const filters = ['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
-    const filteredOrders = filter === 'all' ? ALL_ORDERS : ALL_ORDERS.filter(o => o.status === filter);
+    const fetchOrders = async () => {
+        try {
+            const data = await api.get('/orders');
+            setOrders(data);
+        } catch (error) {
+            console.error('Failed to fetch orders:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const filteredOrders = filter === 'all' ? orders : orders.filter(o => o.status === filter);
 
     return (
         <View style={styles.listContainer}>
@@ -426,30 +365,42 @@ const AdminOrders = ({ navigation }: any) => {
                 ))}
             </ScrollView>
 
-            <FlatList
-                data={filteredOrders}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                    <View style={styles.orderCard}>
-                        <View style={styles.orderLeft}>
-                            <View style={[styles.orderIcon, { backgroundColor: COLORS.dark3 }]}>
-                                <ShoppingCart size={18} color={COLORS.white} />
+            {loading && !refreshing ? (
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <ActivityIndicator color={COLORS.primary} size="large" />
+                </View>
+            ) : (
+                <FlatList
+                    data={filteredOrders}
+                    keyExtractor={(item) => item._id}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchOrders(); }} tintColor={COLORS.primary} />
+                    }
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            style={styles.orderCard}
+                            onPress={() => navigation.navigate('AdminOrderDetails', { orderId: item._id })}
+                        >
+                            <View style={styles.orderLeft}>
+                                <View style={[styles.orderIcon, { backgroundColor: COLORS.dark3 }]}>
+                                    <ShoppingCart size={18} color={COLORS.white} />
+                                </View>
+                                <View style={styles.orderInfo}>
+                                    <Text style={styles.orderId}>ORD-{item._id.slice(-6).toUpperCase()}</Text>
+                                    <Text style={styles.orderCustomer}>{item.userId?.name || 'Guest'}</Text>
+                                    <Text style={styles.orderDate}>{new Date(item.orderDate).toLocaleDateString()}</Text>
+                                </View>
                             </View>
-                            <View style={styles.orderInfo}>
-                                <Text style={styles.orderId}>{item.id}</Text>
-                                <Text style={styles.orderCustomer}>{item.customer}</Text>
-                                <Text style={styles.orderDate}>{item.vendor}</Text>
+                            <View style={styles.orderRight}>
+                                <Text style={styles.orderAmount}>GX {item.totalAmount?.toLocaleString()}</Text>
+                                <StatusBadge status={item.status} />
                             </View>
-                        </View>
-                        <View style={styles.orderRight}>
-                            <Text style={styles.orderAmount}>£{item.amount}</Text>
-                            <StatusBadge status={item.status} />
-                        </View>
-                    </View>
-                )}
-            />
+                        </TouchableOpacity>
+                    )}
+                />
+            )}
         </View>
     );
 };
@@ -459,10 +410,29 @@ const AdminOrders = ({ navigation }: any) => {
 // =====================================================
 const AdminProducts = ({ navigation }: any) => {
     const [search, setSearch] = useState('');
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const fetchProducts = async () => {
+        try {
+            const data = await api.get('/products');
+            setProducts(data);
+        } catch (error) {
+            console.error('Failed to fetch products:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
     const filteredProducts = search
-        ? PRODUCTS.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
-        : PRODUCTS;
+        ? products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+        : products;
 
     return (
         <View style={styles.listContainer}>
@@ -479,25 +449,60 @@ const AdminProducts = ({ navigation }: any) => {
                 </View>
             </View>
 
-            <FlatList
-                data={filteredProducts}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                    <View style={styles.productCard}>
-                        <View style={styles.productDetails}>
-                            <Text style={styles.productName}>{item.name}</Text>
-                            <Text style={styles.productSku}>{item.vendor} • {item.category}</Text>
-                            <View style={styles.productFooter}>
-                                <Text style={styles.productPrice}>£{item.price}</Text>
-                                <Text style={styles.stockText}>{item.stock} stock • {item.sold} sold</Text>
+            {loading && !refreshing ? (
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <ActivityIndicator color={COLORS.primary} size="large" />
+                </View>
+            ) : (
+                <FlatList
+                    data={filteredProducts}
+                    keyExtractor={(item) => item._id}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchProducts(); }} tintColor={COLORS.primary} />
+                    }
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            style={styles.productCard}
+                            onPress={() => navigation.navigate('AdminProductDetails', { productId: item._id })}
+                        >
+                            <View style={styles.productDetails}>
+                                <Text style={styles.productName}>{item.name}</Text>
+                                <Text style={styles.productSku}>{item.category} • stock: {item.stock}</Text>
+                                <View style={styles.productFooter}>
+                                    <Text style={styles.productPrice}>GX {item.price?.toLocaleString()}</Text>
+                                </View>
                             </View>
-                        </View>
-                        <StatusBadge status={item.status} />
-                    </View>
-                )}
-            />
+                            <TouchableOpacity onPress={() => {
+                                Alert.alert('Delete Product', 'Are you sure?', [
+                                    { text: 'Cancel', style: 'cancel' },
+                                    {
+                                        text: 'Delete', style: 'destructive', onPress: async () => {
+                                            try {
+                                                await api.delete(`/products/${item._id}`);
+                                                fetchProducts();
+                                            } catch (e) {
+                                                Alert.alert('Error', 'Failed to delete product');
+                                            }
+                                        }
+                                    }
+                                ]);
+                            }}>
+                                <Trash2 size={20} color={COLORS.error} />
+                            </TouchableOpacity>
+                        </TouchableOpacity>
+                    )}
+                />
+            )}
+
+            {/* FAB to add product */}
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() => navigation.navigate('AdminAddProduct')}
+            >
+                <Plus size={30} color={COLORS.white} />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -507,6 +512,48 @@ const AdminProducts = ({ navigation }: any) => {
 // =====================================================
 const AdminUsers = ({ navigation }: any) => {
     const [activeSection, setActiveSection] = useState('customers');
+    const [users, setUsers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const fetchUsers = async () => {
+        try {
+            const data = await api.get('/admin/users');
+            setUsers(data);
+        } catch (error) {
+            console.error('Failed to fetch users:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const filteredUsers = users.filter(u => {
+        if (activeSection === 'customers') return u.role === 'customer';
+        if (activeSection === 'vendors') return u.role === 'vendor';
+        if (activeSection === 'admins') return u.role === 'admin';
+        return false;
+    });
+
+    const handleDeleteUser = (id: string, name: string) => {
+        Alert.alert('Delete User', `Are you sure you want to delete ${name}?`, [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Delete', style: 'destructive', onPress: async () => {
+                    try {
+                        await api.delete(`/admin/users/${id}`);
+                        fetchUsers();
+                    } catch (e) {
+                        Alert.alert('Error', 'Failed to delete user');
+                    }
+                }
+            }
+        ]);
+    };
 
     return (
         <View style={styles.listContainer}>
@@ -531,67 +578,38 @@ const AdminUsers = ({ navigation }: any) => {
                 </TouchableOpacity>
             </View>
 
-            {activeSection === 'customers' && (
+            {loading && !refreshing ? (
+                <View style={{ flex: 1, justifyContent: 'center' }}>
+                    <ActivityIndicator color={COLORS.primary} size="large" />
+                </View>
+            ) : (
                 <FlatList
-                    data={CUSTOMERS}
-                    keyExtractor={(item) => item.id}
+                    data={filteredUsers}
+                    keyExtractor={(item) => item._id}
                     contentContainerStyle={styles.listContent}
                     showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchUsers(); }} tintColor={COLORS.primary} />
+                    }
                     renderItem={({ item }) => (
                         <View style={styles.userCard}>
-                            <View style={styles.userAvatar}>
-                                <Text style={styles.userAvatarText}>{item.name.charAt(0)}</Text>
+                            <View style={[styles.userAvatar, activeSection !== 'customers' && { backgroundColor: activeSection === 'vendors' ? COLORS.blue + '20' : COLORS.purple + '20' }]}>
+                                {activeSection === 'customers' ? (
+                                    <Text style={styles.userAvatarText}>{item.name?.charAt(0)}</Text>
+                                ) : activeSection === 'vendors' ? (
+                                    <Store size={18} color={COLORS.blue} />
+                                ) : (
+                                    <Shield size={18} color={COLORS.purple} />
+                                )}
                             </View>
                             <View style={styles.userInfo}>
                                 <Text style={styles.userName}>{item.name}</Text>
                                 <Text style={styles.userEmail}>{item.email}</Text>
-                                <Text style={styles.userMeta}>{item.orders} orders • £{item.spent} spent</Text>
+                                <Text style={styles.userMeta}>Joined: {new Date(item.createdAt).toLocaleDateString()}</Text>
                             </View>
-                            <StatusBadge status={item.status} />
-                        </View>
-                    )}
-                />
-            )}
-
-            {activeSection === 'vendors' && (
-                <FlatList
-                    data={VENDORS}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={styles.listContent}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <View style={styles.userCard}>
-                            <View style={[styles.userAvatar, { backgroundColor: COLORS.blue + '20' }]}>
-                                <Store size={18} color={COLORS.blue} />
-                            </View>
-                            <View style={styles.userInfo}>
-                                <Text style={styles.userName}>{item.storeName}</Text>
-                                <Text style={styles.userEmail}>{item.owner}</Text>
-                                <Text style={styles.userMeta}>{item.products} products • £{item.revenue.toLocaleString()} revenue</Text>
-                            </View>
-                            <StatusBadge status={item.status} />
-                        </View>
-                    )}
-                />
-            )}
-
-            {activeSection === 'admins' && (
-                <FlatList
-                    data={ADMIN_USERS}
-                    keyExtractor={(item) => item.id}
-                    contentContainerStyle={styles.listContent}
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                        <View style={styles.userCard}>
-                            <View style={[styles.userAvatar, { backgroundColor: COLORS.purple + '20' }]}>
-                                <Shield size={18} color={COLORS.purple} />
-                            </View>
-                            <View style={styles.userInfo}>
-                                <Text style={styles.userName}>{item.name}</Text>
-                                <Text style={styles.userEmail}>{item.email}</Text>
-                                <Text style={styles.userMeta}>{item.role} • Last login: {item.lastLogin}</Text>
-                            </View>
-                            <StatusBadge status={item.status} />
+                            <TouchableOpacity onPress={() => handleDeleteUser(item._id, item.name)}>
+                                <Trash2 size={20} color={COLORS.error} />
+                            </TouchableOpacity>
                         </View>
                     )}
                 />
@@ -607,13 +625,28 @@ export const AdminLoginScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const { login } = useAuth();
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email || !password) {
             Alert.alert('Error', 'Please enter email and password');
             return;
         }
-        navigation.replace('AdminDashboard');
+
+        setLoading(true);
+        try {
+            const success = await login(email, password, 'admin');
+            if (success) {
+                navigation.replace('AdminDashboard');
+            } else {
+                Alert.alert('Login Failed', 'Invalid admin credentials');
+            }
+        } catch (error: any) {
+            Alert.alert('Error', error.message || 'Login failed');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -640,11 +673,12 @@ export const AdminLoginScreen = ({ navigation }: any) => {
                                 <Mail size={18} color={COLORS.gray} />
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="admin@bantu.com"
+                                    placeholder="admin@bantucreations.com"
                                     placeholderTextColor={COLORS.gray}
                                     value={email}
-                                    onChangeText={(t) => setEmail(sanitizeInput(t))}
+                                    onChangeText={setEmail}
                                     keyboardType="email-address"
+                                    autoCapitalize="none"
                                 />
                             </View>
                         </View>
@@ -658,7 +692,7 @@ export const AdminLoginScreen = ({ navigation }: any) => {
                                     placeholder="••••••••"
                                     placeholderTextColor={COLORS.gray}
                                     value={password}
-                                    onChangeText={(t) => setPassword(sanitizeInput(t))}
+                                    onChangeText={setPassword}
                                     secureTextEntry={!showPassword}
                                 />
                                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
@@ -676,244 +710,6 @@ export const AdminLoginScreen = ({ navigation }: any) => {
         </View>
     );
 };
-
-// =====================================================
-// CATEGORIES MANAGEMENT
-// =====================================================
-export const AdminCategoriesScreen = ({ navigation }: any) => (
-    <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <ChevronLeft size={24} color={COLORS.white} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitleText}>Categories</Text>
-                <TouchableOpacity>
-                    <Plus size={24} color={COLORS.primary} />
-                </TouchableOpacity>
-            </View>
-
-            <FlatList
-                data={CATEGORIES}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                renderItem={({ item }) => (
-                    <View style={styles.categoryCard}>
-                        <Text style={styles.categoryIcon}>{item.icon}</Text>
-                        <View style={styles.categoryInfo}>
-                            <Text style={styles.categoryName}>{item.name}</Text>
-                            <Text style={styles.categoryMeta}>{item.products} products • {item.subcategories} subcategories</Text>
-                        </View>
-                        <TouchableOpacity>
-                            <MoreVertical size={20} color={COLORS.gray} />
-                        </TouchableOpacity>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    </View>
-);
-
-// =====================================================
-// VENDORS MANAGEMENT
-// =====================================================
-export const AdminVendorsScreen = ({ navigation }: any) => (
-    <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <ChevronLeft size={24} color={COLORS.white} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitleText}>Vendors</Text>
-                <View style={{ width: 24 }} />
-            </View>
-
-            <FlatList
-                data={VENDORS}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                ListHeaderComponent={<Text style={styles.sectionTitle}>ALL VENDORS</Text>}
-                renderItem={({ item }) => (
-                    <View style={styles.vendorCard}>
-                        <View style={styles.vendorHeader}>
-                            <View style={[styles.vendorAvatar, { backgroundColor: COLORS.blue + '20' }]}>
-                                <Text style={styles.vendorAvatarText}>{item.storeName.charAt(0)}</Text>
-                            </View>
-                            <View style={styles.vendorInfo}>
-                                <Text style={styles.vendorName}>{item.storeName}</Text>
-                                <Text style={styles.vendorOwner}>{item.owner}</Text>
-                                <Text style={styles.vendorEmail}>{item.email}</Text>
-                            </View>
-                            <StatusBadge status={item.status} />
-                        </View>
-                        <View style={styles.vendorStats}>
-                            <View style={styles.vendorStat}>
-                                <Text style={styles.vendorStatValue}>{item.products}</Text>
-                                <Text style={styles.vendorStatLabel}>Products</Text>
-                            </View>
-                            <View style={styles.vendorStat}>
-                                <Text style={styles.vendorStatValue}>{item.sales}</Text>
-                                <Text style={styles.vendorStatLabel}>Sales</Text>
-                            </View>
-                            <View style={styles.vendorStat}>
-                                <Text style={styles.vendorStatValue}>£{item.revenue.toLocaleString()}</Text>
-                                <Text style={styles.vendorStatLabel}>Revenue</Text>
-                            </View>
-                            <View style={styles.vendorStat}>
-                                <Text style={styles.vendorStatValue}>{item.joined}</Text>
-                                <Text style={styles.vendorStatLabel}>Joined</Text>
-                            </View>
-                        </View>
-                        <View style={styles.vendorActions}>
-                            <TouchableOpacity style={styles.vendorActionBtn}>
-                                <Eye size={16} color={COLORS.blue} />
-                                <Text style={[styles.vendorActionText, { color: COLORS.blue }]}>View</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.vendorActionBtn}>
-                                <Edit3 size={16} color={COLORS.gray} />
-                                <Text style={styles.vendorActionText}>Edit</Text>
-                            </TouchableOpacity>
-                            {item.status === 'pending' && (
-                                <TouchableOpacity style={[styles.vendorActionBtn, { backgroundColor: COLORS.success + '20' }]}>
-                                    <Check size={16} color={COLORS.success} />
-                                    <Text style={[styles.vendorActionText, { color: COLORS.success }]}>Approve</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    </View>
-);
-
-// =====================================================
-// COUPONS MANAGEMENT
-// =====================================================
-export const AdminCouponsScreen = ({ navigation }: any) => (
-    <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <ChevronLeft size={24} color={COLORS.white} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitleText}>Coupons</Text>
-                <TouchableOpacity>
-                    <Plus size={24} color={COLORS.primary} />
-                </TouchableOpacity>
-            </View>
-
-            <FlatList
-                data={COUPONS}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                ListHeaderComponent={<Text style={styles.sectionTitle}>ALL COUPONS</Text>}
-                renderItem={({ item }) => (
-                    <View style={styles.couponCard}>
-                        <View style={styles.couponHeader}>
-                            <Text style={styles.couponCode}>{item.code}</Text>
-                            <StatusBadge status={item.status} />
-                        </View>
-                        <Text style={styles.couponDiscount}>{item.discount} OFF</Text>
-                        <View style={styles.couponDetails}>
-                            <Text style={styles.couponDetail}>Min Order: £{item.minOrder}</Text>
-                            <Text style={styles.couponDetail}>Used: {item.usage}/{item.limit}</Text>
-                            <Text style={styles.couponDetail}>Expires: {item.expires}</Text>
-                        </View>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    </View>
-);
-
-// =====================================================
-// BANNERS MANAGEMENT
-// =====================================================
-export const AdminBannersScreen = ({ navigation }: any) => (
-    <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <ChevronLeft size={24} color={COLORS.white} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitleText}>Banners</Text>
-                <TouchableOpacity>
-                    <Plus size={24} color={COLORS.primary} />
-                </TouchableOpacity>
-            </View>
-
-            <FlatList
-                data={BANNERS}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                ListHeaderComponent={<Text style={styles.sectionTitle}>HOME BANNERS</Text>}
-                renderItem={({ item }) => (
-                    <View style={styles.bannerCard}>
-                        <View style={styles.bannerPlaceholder}>
-                            <ImageIcon size={32} color={COLORS.gray} />
-                            <Text style={styles.bannerTitle}>{item.title}</Text>
-                        </View>
-                        <View style={styles.bannerFooter}>
-                            <Text style={styles.bannerOrder}>#{item.order}</Text>
-                            <StatusBadge status={item.status} />
-                        </View>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    </View>
-);
-
-// =====================================================
-// FINANCE / PAYOUTS
-// =====================================================
-export const AdminFinanceScreen = ({ navigation }: any) => (
-    <View style={styles.container}>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
-        <SafeAreaView style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <ChevronLeft size={24} color={COLORS.white} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitleText}>Finance</Text>
-                <View style={{ width: 24 }} />
-            </View>
-
-            <View style={styles.balanceCard}>
-                <Text style={styles.balanceLabel}>TOTAL REVENUE</Text>
-                <Text style={styles.balanceValue}>£{ADMIN_STATS.totalRevenue.toLocaleString()}</Text>
-            </View>
-
-            <FlatList
-                data={TRANSACTIONS}
-                keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.listContent}
-                ListHeaderComponent={<Text style={styles.sectionTitle}>RECENT TRANSACTIONS</Text>}
-                renderItem={({ item }) => (
-                    <View style={styles.transactionRow}>
-                        <View style={[styles.txIcon, { backgroundColor: item.type === 'payout' ? COLORS.success + '20' : item.type === 'refund' ? COLORS.error + '20' : COLORS.primary + '20' }]}>
-                            {item.type === 'payout' ? <ArrowUpRight size={20} color={COLORS.success} /> :
-                                item.type === 'refund' ? <ArrowDownRight size={20} color={COLORS.error} /> :
-                                    <ShoppingCart size={20} color={COLORS.primary} />}
-                        </View>
-                        <View style={styles.txInfo}>
-                            <Text style={styles.txType}>{item.type.charAt(0).toUpperCase() + item.type.slice(1)}</Text>
-                            <Text style={styles.txDate}>{item.vendor || item.orderId} • {item.date}</Text>
-                        </View>
-                        <Text style={[styles.txAmount, { color: item.type === 'payout' ? COLORS.success : item.type === 'refund' ? COLORS.error : COLORS.white }]}>
-                            {item.type === 'payout' ? '-' : item.type === 'refund' ? '-' : '+'}£{item.amount}
-                        </Text>
-                    </View>
-                )}
-            />
-        </SafeAreaView>
-    </View>
-);
 
 // =====================================================
 // SETTINGS
@@ -979,11 +775,354 @@ export const AdminSettingsScreen = ({ navigation }: any) => {
 };
 
 // =====================================================
-// STYLES
+// ADMIN ADD PRODUCT
 // =====================================================
+export const AdminAddProductScreen = ({ navigation }: any) => {
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [stock, setStock] = useState('');
+    const [category, setCategory] = useState('');
+    const [description, setDescription] = useState('');
+    const [image, setImage] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSave = async () => {
+        if (!name || !price || !stock) {
+            Alert.alert('Error', 'Please fill required fields');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await api.post('/products', {
+                name,
+                price: parseFloat(price),
+                stock: parseInt(stock),
+                category,
+                description,
+                image: image || 'https://images.unsplash.com/photo-1595152230551-2f4676d0ad94?w=800&q=80',
+            });
+            Alert.alert('Success', 'Product added successfully', [
+                { text: 'OK', onPress: () => navigation.goBack() }
+            ]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <ChevronLeft size={24} color={COLORS.white} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitleText}>Add New Product</Text>
+                    <TouchableOpacity onPress={handleSave} disabled={loading}>
+                        {loading ? <ActivityIndicator size="small" color={COLORS.primary} /> : <Text style={styles.seeAll}>Save</Text>}
+                    </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.scrollView} contentContainerStyle={{ padding: 20 }}>
+                    <TouchableOpacity
+                        style={[styles.bannerCard, { height: 200, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.dark2, borderStyle: 'dashed', borderWidth: 1, borderColor: COLORS.gray }]}
+                        onPress={() => Alert.alert('Image Picker', 'Please enter a URL in the "Image URL" field below to preview and add your product image.')}
+                    >
+                        {image ? (
+                            <Image source={{ uri: image }} style={{ width: '100%', height: '100%', borderRadius: 12 }} />
+                        ) : (
+                            <View style={{ alignItems: 'center' }}>
+                                <ImageIcon size={48} color={COLORS.gray3} />
+                                <Text style={{ color: COLORS.gray, marginTop: 12 }}>Tap to add an image</Text>
+                                <Text style={{ color: COLORS.gray3, fontSize: 11, marginTop: 4 }}>Enter URL below to preview</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.inputLabel}>Product Name *</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Enter product name"
+                                placeholderTextColor={COLORS.gray}
+                                value={name}
+                                onChangeText={(t) => setName(sanitizeInput(t))}
+                            />
+                        </View>
+                    </View>
+
+                    <View style={styles.statsRow}>
+                        <View style={[styles.inputGroup, { flex: 1 }]}>
+                            <Text style={styles.inputLabel}>Price *</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="0.00"
+                                    placeholderTextColor={COLORS.gray}
+                                    value={price}
+                                    onChangeText={(t) => setPrice(sanitizeInput(t))}
+                                    keyboardType="numeric"
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.inputGroup, { flex: 1 }]}>
+                            <Text style={styles.inputLabel}>Stock *</Text>
+                            <View style={styles.inputContainer}>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="0"
+                                    placeholderTextColor={COLORS.gray}
+                                    value={stock}
+                                    onChangeText={(t) => setStock(sanitizeInput(t))}
+                                    keyboardType="numeric"
+                                />
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.inputLabel}>Category</Text>
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="e.g. Clothing"
+                                placeholderTextColor={COLORS.gray}
+                                value={category}
+                                onChangeText={(t) => setCategory(sanitizeInput(t))}
+                            />
+                        </View>
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.inputLabel}>Image URL</Text>
+                        <View style={styles.inputContainer}>
+                            <ImageIcon size={18} color={COLORS.gray} />
+                            <TextInput
+                                style={styles.input}
+                                placeholder="https://example.com/image.jpg"
+                                placeholderTextColor={COLORS.gray}
+                                value={image}
+                                onChangeText={(t) => setImage(sanitizeInput(t))}
+                            />
+                        </View>
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.inputLabel}>Description</Text>
+                        <View style={[styles.inputContainer, { height: 120, alignItems: 'flex-start' }]}>
+                            <TextInput
+                                style={[styles.input, { textAlignVertical: 'top', height: '100%' }]}
+                                placeholder="Describe the item..."
+                                placeholderTextColor={COLORS.gray}
+                                multiline
+                                value={description}
+                                onChangeText={(t) => setDescription(sanitizeInput(t))}
+                            />
+                        </View>
+                    </View>
+
+                    <TouchableOpacity style={styles.authButton} onPress={handleSave} disabled={loading}>
+                        <Text style={styles.authButtonText}>{loading ? 'Saving...' : 'Add Product'}</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </SafeAreaView>
+        </View>
+    );
+};
+// =====================================================
+// ADMIN PRODUCT DETAILS
+// =====================================================
+export const AdminProductDetailsScreen = ({ route, navigation }: any) => {
+    const { productId } = route.params;
+    const [product, setProduct] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const data = await api.get(`/products/${productId}`);
+                setProduct(data);
+            } catch (error) {
+                console.error('Failed to fetch product:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProduct();
+    }, [productId]);
+
+    if (loading) return (
+        <View style={styles.loadingCenter}>
+            <ActivityIndicator color={COLORS.primary} size="large" />
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <ChevronLeft size={24} color={COLORS.white} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitleText}>Product Details</Text>
+                    <TouchableOpacity onPress={() => {
+                        Alert.alert('Delete', 'Are you sure?', [
+                            { text: 'Cancel' },
+                            {
+                                text: 'Delete', style: 'destructive', onPress: async () => {
+                                    await api.delete(`/products/${productId}`);
+                                    navigation.goBack();
+                                }
+                            }
+                        ]);
+                    }}>
+                        <Trash2 size={24} color={COLORS.error} />
+                    </TouchableOpacity>
+                </View>
+
+                <ScrollView style={styles.scrollView}>
+                    {product?.image && <Image source={{ uri: product.image }} style={{ width: '100%', height: 300, backgroundColor: COLORS.dark2 }} />}
+                    <View style={{ padding: 20 }}>
+                        <Text style={[styles.headerTitle, { fontSize: 24 }]}>{product?.name}</Text>
+                        <Text style={[styles.productPrice, { fontSize: 20, marginVertical: 8 }]}>GX {product?.price?.toLocaleString()}</Text>
+                        <View style={styles.statsRow}>
+                            <View style={[styles.statCard, { backgroundColor: COLORS.dark2 }]}>
+                                <Text style={styles.statLabel}>Stock</Text>
+                                <Text style={styles.statValue}>{product?.stock}</Text>
+                            </View>
+                            <View style={[styles.statCard, { backgroundColor: COLORS.dark2 }]}>
+                                <Text style={styles.statLabel}>Category</Text>
+                                <Text style={[styles.statValue, { fontSize: 16 }]}>{product?.category || 'N/A'}</Text>
+                            </View>
+                        </View>
+                        <Text style={[styles.sectionTitle, { marginLeft: 0, marginTop: 24 }]}>DESCRIPTION</Text>
+                        <Text style={{ color: COLORS.gray, lineHeight: 20 }}>{product?.description || 'No description available.'}</Text>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </View>
+    );
+};
+
+// =====================================================
+// ADMIN ORDER DETAILS
+// =====================================================
+export const AdminOrderDetailsScreen = ({ route, navigation }: any) => {
+    const { orderId } = route.params;
+    const [order, setOrder] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchOrder = async () => {
+            try {
+                const data = await api.get(`/orders/${orderId}`);
+                setOrder(data);
+            } catch (error) {
+                console.error('Failed to fetch order:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchOrder();
+    }, [orderId]);
+
+    const handleUpdateStatus = async (status: string) => {
+        try {
+            await api.put(`/orders/${orderId}/status`, { status });
+            const updated = await api.get(`/orders/${orderId}`);
+            setOrder(updated);
+            Alert.alert('Success', `Order status updated to ${status}`);
+        } catch (error) {
+            Alert.alert('Error', 'Failed to update status');
+        }
+    };
+
+    if (loading) return (
+        <View style={styles.loadingCenter}>
+            <ActivityIndicator color={COLORS.primary} size="large" />
+        </View>
+    );
+
+    return (
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.black} />
+            <SafeAreaView style={styles.safeArea}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <ChevronLeft size={24} color={COLORS.white} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitleText}>Order Details</Text>
+                    <View style={{ width: 24 }} />
+                </View>
+
+                <ScrollView style={styles.scrollView}>
+                    <View style={{ padding: 20 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                            <View>
+                                <Text style={{ color: COLORS.gray, fontSize: 12 }}>ORDER ID</Text>
+                                <Text style={{ color: COLORS.white, fontSize: 16, fontWeight: '700' }}>#{orderId.slice(-8).toUpperCase()}</Text>
+                            </View>
+                            <StatusBadge status={order?.status} />
+                        </View>
+
+                        <Text style={styles.sectionTitle}>CUSTOMER</Text>
+                        <View style={styles.userCard}>
+                            <View style={styles.userAvatar}>
+                                <Text style={styles.userAvatarText}>{order?.userId?.name?.charAt(0)}</Text>
+                            </View>
+                            <View style={styles.userInfo}>
+                                <Text style={styles.userName}>{order?.userId?.name}</Text>
+                                <Text style={styles.userEmail}>{order?.userId?.email}</Text>
+                            </View>
+                        </View>
+
+                        <Text style={styles.sectionTitle}>ITEMS</Text>
+                        {order?.items?.map((item: any, idx: number) => (
+                            <View key={idx} style={styles.productCard}>
+                                <View style={styles.productDetails}>
+                                    <Text style={styles.productName}>{item.productId?.name || 'Deleted Product'}</Text>
+                                    <Text style={styles.productSku}>Qty: {item.quantity}</Text>
+                                    <Text style={styles.productPrice}>GX {item.price?.toLocaleString()}</Text>
+                                </View>
+                            </View>
+                        ))}
+
+                        <View style={{ marginTop: 24, padding: 16, backgroundColor: COLORS.dark2, borderRadius: 12 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                                <Text style={{ color: COLORS.gray }}>Subtotal</Text>
+                                <Text style={{ color: COLORS.white }}>GX {order?.totalAmount?.toLocaleString()}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, borderTopWidth: 1, borderTopColor: COLORS.dark3, paddingTop: 8 }}>
+                                <Text style={{ color: COLORS.white, fontWeight: '700' }}>Total</Text>
+                                <Text style={{ color: COLORS.primary, fontWeight: '700', fontSize: 18 }}>GX {order?.totalAmount?.toLocaleString()}</Text>
+                            </View>
+                        </View>
+
+                        <Text style={styles.sectionTitle}>UPDATE STATUS</Text>
+                        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+                            {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => (
+                                <TouchableOpacity
+                                    key={s}
+                                    style={[styles.filterTab, order?.status === s && { backgroundColor: COLORS.primary }]}
+                                    onPress={() => handleUpdateStatus(s)}
+                                >
+                                    <Text style={{ color: COLORS.white, fontSize: 12, fontWeight: '600' }}>{s.toUpperCase()}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
+        </View>
+    );
+};
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: COLORS.black },
     safeArea: { flex: 1 },
+    loadingCenter: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.black },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: COLORS.dark2 },
     headerTitle: { fontSize: 20, fontWeight: '700', color: COLORS.white },
     headerTitleText: { fontSize: 16, fontWeight: '600', color: COLORS.white },
@@ -1151,4 +1290,5 @@ const styles = StyleSheet.create({
     bottomTab: { flexDirection: 'row', backgroundColor: COLORS.dark2, paddingVertical: 8, paddingBottom: 24, borderTopWidth: 1, borderTopColor: COLORS.dark3 },
     tabItem: { flex: 1, alignItems: 'center' },
     tabLabel: { fontSize: 10, fontWeight: '600', marginTop: 4 },
+    fab: { position: 'absolute', bottom: 100, right: 20, width: 60, height: 60, borderRadius: 30, backgroundColor: COLORS.primary, justifyContent: 'center', alignItems: 'center', elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 5 },
 });

@@ -16,3 +16,19 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         res.status(401).json({ message: 'Token is not valid' });
     }
 };
+
+export const vendorMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if ((req as any).user && ((req as any).user.role === 'vendor' || (req as any).user.role === 'admin')) {
+        next();
+    } else {
+        res.status(403).json({ message: 'Access denied. Authorized roles only.' });
+    }
+};
+
+export const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if ((req as any).user && (req as any).user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ message: 'Access denied. Admin only.' });
+    }
+};

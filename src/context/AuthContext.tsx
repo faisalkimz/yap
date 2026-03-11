@@ -2,13 +2,13 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/api';
 
-export type UserRole = 'customer' | 'vendor' | null;
+export type UserRole = 'customer' | 'vendor' | 'admin' | null;
 
 interface User {
     id: string;
     email: string;
     name: string;
-    role: 'customer' | 'vendor';
+    role: 'customer' | 'vendor' | 'admin';
     avatar?: string;
     vendorId?: string;
 }
@@ -17,7 +17,7 @@ interface AuthContextType {
     user: User | null;
     isLoading: boolean;
     isVendor: boolean;
-    login: (email: string, password: string, role: 'customer' | 'vendor') => Promise<boolean>;
+    login: (email: string, password: string, role: 'customer' | 'vendor' | 'admin') => Promise<boolean>;
     register: (name: string, email: string, password: string) => Promise<boolean>;
     vendorLogin: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
-    const login = async (email: string, password: string, role: 'customer' | 'vendor'): Promise<boolean> => {
+    const login = async (email: string, password: string, role: 'customer' | 'vendor' | 'admin'): Promise<boolean> => {
         try {
             setIsLoading(true);
             const data = await api.post('/auth/login', { email, password });
@@ -69,8 +69,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 id: data.user.id,
                 email: data.user.email,
                 name: data.user.name,
-                role, // In a real app, role would come from DB
-                vendorId: role === 'vendor' ? 'vendor_001' : undefined,
+                role: data.user.role,
+                vendorId: data.user.role === 'vendor' ? 'vendor_001' : undefined,
             };
 
             setUser(newUser);

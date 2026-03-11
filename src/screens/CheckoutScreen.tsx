@@ -11,48 +11,73 @@ import {
     Modal,
     Dimensions,
     Platform,
-    StatusBar
+    StatusBar,
+    Alert,
+    ActivityIndicator
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { typography } from '../theme/typography';
-import { ChevronLeft, MapPin, Pencil, CheckCircle2, ShieldCheck, Wallet } from 'lucide-react-native';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
+import {
+    ChevronLeft,
+    MapPin,
+    Pencil,
+    CheckCircle2,
+    ShieldCheck,
+    Wallet
+} from 'lucide-react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Checkout'>;
 
 const { width, height } = Dimensions.get('window');
 
-const CHECKOUT_ITEMS = [
-    {
-        id: '1',
-        name: 'Abracadabra Shirt',
-        type: 'Unisex Wear',
-        price: 4000,
-        qty: 2,
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80',
-    },
-    {
-        id: '2',
-        name: 'Panther Jacket',
-        type: 'Unisex Wear',
-        price: 3500,
-        qty: 2,
-        image: 'https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=500&q=80',
-    }
-];
-
 export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
+    const { cartItems, clearCart } = useCart();
+    const { user } = useAuth();
     const [isPaymentModalVisible, setPaymentModalVisible] = useState(false);
-    const [selectedPayment, setSelectedPayment] = useState('Apple Pay'); // Updated defaults
+    const [selectedPayment, setSelectedPayment] = useState('Apple Pay');
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const subtotal = CHECKOUT_ITEMS.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const vat = 350;
-    const delivery = 150;
+    const subtotal = cartItems.reduce((sum, item) => {
+        const price = parseFloat(item.price.replace(/[^\d.]/g, '')) || 0;
+        return sum + (price * item.quantity);
+    }, 0);
+
+    const vat = subtotal * 0.2; // 20% VAT
+    const delivery = 15;
     const total = subtotal + vat + delivery;
 
-    const handlePayment = () => {
-        setPaymentModalVisible(false);
-        navigation.replace('PaymentGateway');
+    const handlePayment = async () => {
+        setIsProcessing(true);
+        try {
+            const orderData = {
+                items: cartItems.map(item => ({
+                    productId: item.id,
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: parseFloat(item.price.replace(/[^\d.]/g, '')) || 0,
+                    image: item.image
+                })),
+                totalAmount: total,
+                shippingAddress: '6, Cole Palmer Avenue, London, UK', // In a real app, this would be from state
+                paymentMethod: selectedPayment
+            };
+
+            await api.post('/orders', orderData);
+
+            setPaymentModalVisible(false);
+            clearCart();
+            navigation.replace('OrderSuccess');
+        } catch (error: any) {
+            console.error('Order failed:', error);
+            Alert.alert('Payment Failed', error.message || 'Could not process your order.');
+            navigation.navigate('PaymentFailed');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     return (
@@ -94,15 +119,15 @@ export const CheckoutScreen: React.FC<Props> = ({ navigation }) => {
                     {/* Minimal Items List */}
                     <Text style={[styles.sectionTitle, { marginTop: 24 }]}>Order Details</Text>
                     <View style={styles.itemsWrapper}>
-                        {CHECKOUT_ITEMS.map((item, index) => (
-                            <View key={item.id} style={[styles.itemCard, index === CHECKOUT_ITEMS.length - 1 && { borderBottomWidth: 0 }]}>
+                        {cartItems.map((item, index) => (
+                            <View key={item.id} style={[styles.itemCard, index === cartItems.length - 1 && { borderBottomWidth: 0 }]}>
                                 <Image source={{ uri: item.image }} style={styles.itemImage} />
                                 <View style={styles.itemDetails}>
                                     <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
-                                    <Text style={styles.itemType}>{item.type}</Text>
+                                    <Text style={styles.itemType}>{item.category || 'Luxury Piece'}</Text>
                                     <View style={styles.priceRowItem}>
-                                        <Text style={styles.itemPrice}>GX {item.price.toLocaleString()}</Text>
-                                        <Text style={styles.qtyText}>Qty: {item.qty}</Text>
+                                        <Text style={styles.itemPrice}>{item.price}</Text>
+                                        <Text style={styles.qtyText}>Qty: {item.quantity}</Text>
                                     </View>
                                 </View>
                             </View>

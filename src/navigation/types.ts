@@ -80,6 +80,9 @@ export type RootStackParamList = {
     AdminOrders: undefined;
     AdminProducts: undefined;
     AdminUsers: undefined;
+    AdminAddProduct: undefined;
+    AdminOrderDetails: { orderId: string };
+    AdminProductDetails: { productId: string };
 
     // Feature Screens - Mobile App Specific
     PushNotifications: undefined;

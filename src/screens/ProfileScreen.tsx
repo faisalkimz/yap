@@ -69,9 +69,9 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                             <Text style={styles.greeting}>{user ? 'Good Evening,' : 'Welcome to'}</Text>
                             <Text style={styles.name}>{user ? user.name : 'Bantu Creations'}</Text>
                             <View style={styles.statusRow}>
-                                <Text style={styles.statusText}>{user ? 'Titanium Curator' : 'Exclusive Access'}</Text>
+                                <Text style={styles.statusText}>{user ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : 'Exclusive Access'}</Text>
                                 <View style={styles.statusDivider} />
-                                <Text style={styles.statusPoints}>{user ? '2.4k Pts' : 'Join Now'}</Text>
+                                <Text style={styles.statusPoints}>{user ? 'Verified' : 'Join Now'}</Text>
                             </View>
                         </View>
                     </View>
@@ -151,6 +151,16 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                             </View>
                             <MoveRight size={20} color={colors.secondary} />
                         </TouchableOpacity>
+
+                        {user?.role === 'admin' && (
+                            <TouchableOpacity style={[styles.curatedLink, { borderBottomColor: colors.primary }]} onPress={() => navigation.navigate('AdminDashboard')}>
+                                <View style={styles.curatedLeft}>
+                                    <Shield size={20} color={colors.primary} />
+                                    <Text style={[styles.curatedLabel, { color: colors.primary }]}>Admin Management Panel</Text>
+                                </View>
+                                <MoveRight size={20} color={colors.primary} />
+                            </TouchableOpacity>
+                        )}
                     </View>
 
                     {/* App Maintenance */}

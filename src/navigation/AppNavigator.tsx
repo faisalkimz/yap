@@ -73,12 +73,10 @@ const VendorMessagesScreen = VendorDashboardScreen;
 import {
   AdminLoginScreen,
   AdminDashboardScreen,
-  AdminCategoriesScreen,
-  AdminVendorsScreen,
-  AdminCouponsScreen,
-  AdminBannersScreen,
-  AdminFinanceScreen,
   AdminSettingsScreen,
+  AdminAddProductScreen,
+  AdminOrderDetailsScreen,
+  AdminProductDetailsScreen,
 } from '../screens/AdminScreens';
 
 // Feature Screens
@@ -218,12 +216,10 @@ export const AppNavigator = () => {
         {/* Admin Screens */}
         <Stack.Screen name="AdminLogin" component={AdminLoginScreen} />
         <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} />
-        <Stack.Screen name="AdminCategories" component={AdminCategoriesScreen} />
-        <Stack.Screen name="AdminVendors" component={AdminVendorsScreen} />
-        <Stack.Screen name="AdminCoupons" component={AdminCouponsScreen} />
-        <Stack.Screen name="AdminBanners" component={AdminBannersScreen} />
-        <Stack.Screen name="AdminFinance" component={AdminFinanceScreen} />
         <Stack.Screen name="AdminSettings" component={AdminSettingsScreen} />
+        <Stack.Screen name="AdminAddProduct" component={AdminAddProductScreen} />
+        <Stack.Screen name="AdminOrderDetails" component={AdminOrderDetailsScreen} />
+        <Stack.Screen name="AdminProductDetails" component={AdminProductDetailsScreen} />
 
         {/* Feature Screens - Mobile App Specific */}
         <Stack.Screen name="PushNotifications" component={PushNotificationsScreen} />

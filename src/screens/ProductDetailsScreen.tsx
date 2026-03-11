@@ -38,31 +38,44 @@ export const ProductDetailsScreen: React.FC<Props> = ({ navigation, route }) => 
     const { isFavorite, toggleFavorite } = useFavorites();
     const { addToCart, addToRecentlyViewed, recentlyViewed } = useCart();
 
-    const favorited = isFavorite(product.id);
+    const normalizedProduct = {
+        ...product,
+        id: product._id || product.id,
+        price: typeof product.price === 'number' ? `GX ${product.price.toLocaleString()}` : product.price,
+    };
+
+    const favorited = isFavorite(normalizedProduct.id);
     const [selectedSize, setSelectedSize] = useState('M');
     const [selectedColor, setSelectedColor] = useState(COLORS[0]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
     React.useEffect(() => {
-        addToRecentlyViewed(product as any);
+        addToRecentlyViewed(normalizedProduct as any);
     }, [product]);
 
     const handleAddToCart = () => {
-        addToCart(product as any, quantity, selectedSize, selectedColor.name);
+        addToCart(normalizedProduct as any, quantity, selectedSize, selectedColor.name);
     };
 
-    const renderRecentItem = (item: any) => (
-        <TouchableOpacity
-            key={item.id}
-            style={styles.recentItem}
-            onPress={() => navigation.push('ProductDetails', { product: item })}
-        >
-            <Image source={{ uri: item.image }} style={styles.recentImg} />
-            <Text style={styles.recentName} numberOfLines={1}>{item.name}</Text>
-            <Text style={styles.recentPrice}>{item.price}</Text>
-        </TouchableOpacity>
-    );
+    const renderRecentItem = (item: any) => {
+        const p = {
+            ...item,
+            id: item._id || item.id,
+            price: typeof item.price === 'number' ? `GX ${item.price.toLocaleString()}` : item.price,
+        };
+        return (
+            <TouchableOpacity
+                key={p.id}
+                style={styles.recentItem}
+                onPress={() => navigation.push('ProductDetails', { product: p })}
+            >
+                <Image source={{ uri: p.image }} style={styles.recentImg} />
+                <Text style={styles.recentName} numberOfLines={1}>{p.name}</Text>
+                <Text style={styles.recentPrice}>{p.price}</Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <View style={styles.container}>

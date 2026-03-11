@@ -26,6 +26,7 @@ type CartContextType = {
     clearRecentlyViewed: () => void;
     isMiniCartVisible: boolean;
     setMiniCartVisible: (visible: boolean) => void;
+    clearCart: () => void;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -112,6 +113,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         saveData(cartItems, []);
     };
 
+    const clearCart = () => {
+        setCartItems([]);
+        saveData([], recentlyViewed);
+    };
+
     return (
         <CartContext.Provider value={{
             cartItems,
@@ -122,7 +128,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             addToRecentlyViewed,
             clearRecentlyViewed,
             isMiniCartVisible,
-            setMiniCartVisible
+            setMiniCartVisible,
+            clearCart
         }}>
             {children}
         </CartContext.Provider>
