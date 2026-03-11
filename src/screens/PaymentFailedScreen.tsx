@@ -60,7 +60,7 @@ export const PaymentFailedScreen: React.FC<Props> = ({ navigation }) => {
                 {/* Secure Contact info */}
                 <View style={styles.footer}>
                     <Text style={styles.footerText}>Need help? Contact our Concierge at</Text>
-                    <Text style={styles.footerLink}>support@yapfashion.com</Text>
+                    <Text style={styles.footerLink}>support@bantucreations.com</Text>
                 </View>
             </SafeAreaView>
         </View>

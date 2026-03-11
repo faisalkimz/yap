@@ -41,7 +41,7 @@ const FAQ_DATA = [
     {
         category: 'AUTHENTICITY & QUALITY',
         items: [
-            { question: 'Are all items authentic?', answer: 'Guaranteed. Every piece in the Yap Archive is authenticated by our master curators and comes with a digital certificate of authenticity.' },
+            { question: 'Are all items authentic?', answer: 'Guaranteed. Every piece in the Bantu Creations Archive is authenticated by our master curators and comes with a digital certificate of authenticity.' },
             { question: 'How should I care for my velvet pieces?', answer: 'We recommend professional dry cleaning only. Store in a cool, dry place using the provided dust bags.' }
         ]
     }
@@ -71,7 +71,7 @@ export const FAQScreen: React.FC<Props> = ({ navigation }) => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
                 <View style={styles.hero}>
                     <Text style={styles.heroTitle}>Concierge Guide</Text>
-                    <Text style={styles.heroSub}>Everything you need to know about the Yap experience.</Text>
+                    <Text style={styles.heroSub}>Everything you need to know about the Bantu Creations experience.</Text>
                 </View>
 
                 {FAQ_DATA.map((section, sectionIdx) => (

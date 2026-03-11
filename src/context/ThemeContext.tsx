@@ -59,7 +59,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_STORAGE_KEY = '@yap_theme_mode';
+const THEME_STORAGE_KEY = '@bantu_theme_mode';
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const systemColorScheme = useColorScheme();

@@ -14,6 +14,7 @@ import {
     FlatList,
     Switch,
 } from 'react-native';
+import { sanitizeInput } from '../utils/sanitize';
 import {
     ChevronLeft,
     Bell,
@@ -103,9 +104,9 @@ const NOTIFICATION_SETTINGS = [
 ];
 
 const CHAT_MESSAGES = [
-    { id: '1', sender: 'support', name: 'YAP Support', message: 'Hello! How can I help you today?', time: '10:30 AM' },
+    { id: '1', sender: 'support', name: 'Bantu Support', message: 'Hello! How can I help you today?', time: '10:30 AM' },
     { id: '2', sender: 'user', message: 'I need help with my order', time: '10:31 AM' },
-    { id: '3', sender: 'support', name: 'YAP Support', message: 'Of course! Can you please share your order number?', time: '10:32 AM' },
+    { id: '3', sender: 'support', name: 'Bantu Support', message: 'Of course! Can you please share your order number?', time: '10:32 AM' },
 ];
 
 const BIOMETRIC_OPTIONS = [
@@ -316,7 +317,7 @@ export const InAppChatScreen = ({ navigation }: any) => {
                     <View style={styles.chatHeaderInfo}>
                         <View style={styles.chatAvatar}><MessageCircle size={20} color={COLORS.white} /></View>
                         <View>
-                            <Text style={styles.headerTitleText}>YAP Support</Text>
+                            <Text style={styles.headerTitleText}>Bantu Support</Text>
                             <Text style={styles.chatStatus}>Online • Typically replies instantly</Text>
                         </View>
                     </View>
@@ -530,7 +531,7 @@ export const LoyaltyProgramScreen = ({ navigation }: any) => (
                 <View style={styles.membershipCard}>
                     <Award size={40} color={COLORS.primary} />
                     <Text style={styles.membershipTitle}>Earn Points</Text>
-                    <Text style={styles.membershipPoints}>12,450 YAP Points</Text>
+                    <Text style={styles.membershipPoints}>12,450 Bantu Points</Text>
                     <Text style={styles.progressText}>Earn 1 point for every £1 spent</Text>
                 </View>
 
@@ -713,7 +714,7 @@ export const ReferralProgramScreen = ({ navigation }: any) => (
                 <View style={styles.referralCode}>
                     <Text style={styles.referralCodeLabel}>Your Referral Code</Text>
                     <View style={styles.referralCodeBox}>
-                        <Text style={styles.referralCodeText}>YAP2024</Text>
+                        <Text style={styles.referralCodeText}>BANTU2024</Text>
                         <TouchableOpacity>
                             <Copy size={20} color={COLORS.primary} />
                         </TouchableOpacity>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { api } from '../services/api';
 
 export type UserRole = 'customer' | 'vendor' | null;
 
@@ -17,6 +18,7 @@ interface AuthContextType {
     isLoading: boolean;
     isVendor: boolean;
     login: (email: string, password: string, role: 'customer' | 'vendor') => Promise<boolean>;
+    register: (name: string, email: string, password: string) => Promise<boolean>;
     vendorLogin: (email: string, password: string) => Promise<boolean>;
     logout: () => Promise<void>;
     switchToVendor: () => Promise<void>;
@@ -25,7 +27,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = '@yap_auth';
+const AUTH_STORAGE_KEY = '@bantu_auth';
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -61,22 +63,49 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const login = async (email: string, password: string, role: 'customer' | 'vendor'): Promise<boolean> => {
         try {
             setIsLoading(true);
-            // Simulate API call - in real app, this would be an API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const data = await api.post('/auth/login', { email, password });
 
             const newUser: User = {
-                id: '1',
-                email,
-                name: email.split('@')[0],
-                role,
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.name,
+                role, // In a real app, role would come from DB
                 vendorId: role === 'vendor' ? 'vendor_001' : undefined,
             };
 
             setUser(newUser);
             await saveAuth(newUser);
+            // Save token separately if needed
+            await AsyncStorage.setItem(`${AUTH_STORAGE_KEY}_token`, data.token);
+
             return true;
         } catch (error) {
             console.error('Login error:', error);
+            return false;
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const register = async (name: string, email: string, password: string): Promise<boolean> => {
+        try {
+            setIsLoading(true);
+            const data = await api.post('/auth/register', { name, email, password });
+
+            const newUser: User = {
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.name,
+                role: 'customer',
+            };
+
+            setUser(newUser);
+            await saveAuth(newUser);
+            await AsyncStorage.setItem(`${AUTH_STORAGE_KEY}_token`, data.token);
+
+            return true;
+        } catch (error) {
+            console.error('Registration error:', error);
             return false;
         } finally {
             setIsLoading(false);
@@ -118,6 +147,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isLoading,
             isVendor: user?.role === 'vendor',
             login,
+            register,
             vendorLogin,
             logout,
             switchToVendor,

@@ -30,7 +30,7 @@ export const ShoppingExtrasScreen: React.FC<Props> = ({ navigation, route }) => 
     const renderCoupons = () => (
         <View style={styles.tabContent}>
             {[
-                { code: 'YAPFIRST30', desc: '30% off on your first luxury order', expires: 'Ends in 2 days', color: '#1C1C1E' },
+                { code: 'BANTUFIRST30', desc: '30% off on your first luxury order', expires: 'Ends in 2 days', color: '#1C1C1E' },
                 { code: 'WINTERVIBE', desc: 'Extra 15% off on the Winter Collection', expires: 'Ends in 5 days', color: '#FF6B4A' },
             ].map((item, idx) => (
                 <View key={idx} style={[styles.couponCard, { borderColor: item.color }]}>

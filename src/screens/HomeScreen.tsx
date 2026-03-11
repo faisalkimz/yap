@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -33,6 +33,7 @@ import { BottomNav } from '../components/BottomNav';
 import { useFavorites } from '../context/FavoritesContext';
 import { useCart } from '../context/CartContext';
 import { Button } from '../components/Button';
+import { api } from '../services/api';
 
 const { width } = Dimensions.get('window');
 const PRODUCT_CARD_WIDTH = (width - 60) / 2;
@@ -108,6 +109,22 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const { isFavorite, toggleFavorite } = useFavorites();
     const { recentlyViewed, addToRecentlyViewed, clearRecentlyViewed } = useCart();
     const [activeCategory, setActiveCategory] = useState('1');
+    const [trendingProducts, setTrendingProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await api.get('/products');
+                setTrendingProducts(data);
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
 
     const renderProduct = (product: typeof FEATURED_PRODUCTS[0], index: number) => (
         <TouchableOpacity
@@ -166,7 +183,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 {/* Ecommerce Header */}
                 <View style={styles.header}>
                     <View style={styles.brandBox}>
-                        <Text style={styles.brandTitle}>YAP</Text>
+                        <Text style={styles.brandTitle}>BANTU CREATIONS</Text>
                     </View>
                     <View style={styles.headerActions}>
                         <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.navigate('SearchResults', { query: '' })}>
@@ -272,7 +289,13 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     </View>
 
                     <View style={styles.productGrid}>
-                        {FEATURED_PRODUCTS.map((p, idx) => renderProduct(p, idx))}
+                        {loading ? (
+                            <View style={{ padding: 40, width: '100%', alignItems: 'center' }}>
+                                <Text style={{ fontSize: 13, fontWeight: '800', color: colors.muted }}>REFRESHING RELEASES...</Text>
+                            </View>
+                        ) : (
+                            trendingProducts.map((p, idx) => renderProduct(p, idx))
+                        )}
                     </View>
 
                     {/* Deals for You */}
@@ -336,7 +359,7 @@ const styles = StyleSheet.create({
     safeArea: { flex: 1 },
     header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 12 },
     brandBox: { height: 44, justifyContent: 'center' },
-    brandTitle: { fontSize: 24, fontWeight: '900', color: colors.secondary, letterSpacing: -1, fontFamily: typography.display },
+    brandTitle: { fontSize: 20, fontWeight: '900', color: colors.secondary, letterSpacing: -1, fontFamily: typography.display },
     headerActions: { flexDirection: 'row', gap: 8 },
     iconCircle: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.lightGray, justifyContent: 'center', alignItems: 'center' },
     notifDot: { position: 'absolute', top: 12, right: 12, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, borderWidth: 2, borderColor: colors.lightGray },

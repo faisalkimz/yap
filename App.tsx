@@ -5,6 +5,7 @@ import { AppNavigator } from './src/navigation/AppNavigator';
 import { FavoritesProvider } from './src/context/FavoritesContext';
 import { CartProvider } from './src/context/CartContext';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
+import { AuthProvider } from './src/context/AuthContext';
 
 function AppContent() {
   const { colors, isDark } = useTheme();
@@ -23,9 +24,11 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

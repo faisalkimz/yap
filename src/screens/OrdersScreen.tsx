@@ -20,7 +20,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Orders'>;
 
 const ORDERS = [
     {
-        id: 'YAP-928-11',
+        id: 'BANTU-928-11',
         date: 'Oct 21, 2024',
         status: 'MANIFESTED',
         total: '£730.00',

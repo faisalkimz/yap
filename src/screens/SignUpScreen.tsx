@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Alert } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import {
     StyleSheet,
     Text,
@@ -21,6 +23,32 @@ type Props = NativeStackScreenProps<RootStackParamList, 'GetStarted'>;
 
 export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const { register } = useAuth();
+
+    const handleSignUp = async () => {
+        if (!name || !email || !password) {
+            Alert.alert('Error', 'Please fill in all fields');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const success = await register(name, email, password);
+            if (success) {
+                navigation.replace('Home');
+            } else {
+                Alert.alert('Error', 'Registration failed. User might already exist.');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'An error occurred during sign up');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.mainContainer}>
@@ -46,7 +74,7 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                         showsVerticalScrollIndicator={false}
                     >
                         <View style={styles.header}>
-                            <Text style={styles.title}>Join Yap</Text>
+                            <Text style={styles.title}>Join Bantu Creations</Text>
                             <Text style={styles.subtitle}>Unlock a world of curated luxury fashion and exclusive drops.</Text>
                         </View>
 
@@ -61,6 +89,8 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                                         placeholder="Faisal Kimz"
                                         placeholderTextColor="#A0A0A0"
                                         autoCapitalize="words"
+                                        value={name}
+                                        onChangeText={setName}
                                     />
                                 </View>
                             </View>
@@ -76,6 +106,8 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                                         placeholderTextColor="#A0A0A0"
                                         keyboardType="email-address"
                                         autoCapitalize="none"
+                                        value={email}
+                                        onChangeText={setEmail}
                                     />
                                 </View>
                             </View>
@@ -90,6 +122,8 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
                                         placeholder="••••••••"
                                         placeholderTextColor="#A0A0A0"
                                         secureTextEntry={!showPassword}
+                                        value={password}
+                                        onChangeText={setPassword}
                                     />
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
                                         {showPassword ? <EyeOff size={20} color="#8E8E93" /> : <Eye size={20} color="#8E8E93" />}
@@ -107,14 +141,15 @@ export const SignUpScreen: React.FC<Props> = ({ navigation }) => {
 
                             <TouchableOpacity
                                 style={styles.signUpButton}
-                                onPress={() => navigation.navigate('EmailVerification')}
+                                onPress={handleSignUp}
+                                disabled={loading}
                                 activeOpacity={0.9}
                             >
                                 <LinearGradient
                                     colors={['#1C1C1E', '#2C2C2E']}
                                     style={styles.buttonGradient}
                                 >
-                                    <Text style={styles.signUpButtonText}>Create Account</Text>
+                                    <Text style={styles.signUpButtonText}>{loading ? 'Creating Account...' : 'Create Account'}</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
 

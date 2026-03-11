@@ -24,13 +24,13 @@ export const LegalContentScreen: React.FC<Props> = ({ navigation, route }) => {
                 return {
                     title: 'Privacy Policy',
                     lastUpdated: 'Updated Jan 2024',
-                    content: 'At Yap Fashion PLC, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you use our mobile application and related services.\n\nYour data is used solely to enhance your shopping experience, manage orders, and provide personalized styling recommendations. We use industry-standard encryption (AES-256) to ensure that your private details remain secure within our vault.\n\nWe do not sell your personal data to third parties. For any inquiries regarding your data rights, please contact our data Protection Officer at dpo@yapfashion.com.'
+                    content: 'At Bantu Creations PLC, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you use our mobile application and related services.\n\nYour data is used solely to enhance your shopping experience, manage orders, and provide personalized styling recommendations. We use industry-standard encryption (AES-256) to ensure that your private details remain secure within our vault.\n\nWe do not sell your personal data to third parties. For any inquiries regarding your data rights, please contact our data Protection Officer at dpo@bantucreations.com.'
                 };
             case 'terms':
                 return {
                     title: 'Terms of Service',
                     lastUpdated: 'Updated Aug 2024',
-                    content: 'By accessing or using the Yap mobile application, you agree to be bound by these Terms of Service. Please read them carefully.\n\nAll content, designs, and intellectual property within this application are owned by Yap Fashion PLC. Unauthorized reproduction or distribution is strictly prohibited.\n\nOur luxury concierge services are subject to availability. Prices and item availability are subject to change without prior notice. Global shipping is provided through our premium logistics partners (DHL, FedEx) and is subject to local customs regulations.'
+                    content: 'By accessing or using the Bantu Creations mobile application, you agree to be bound by these Terms of Service. Please read them carefully.\n\nAll content, designs, and intellectual property within this application are owned by Bantu Creations PLC. Unauthorized reproduction or distribution is strictly prohibited.\n\nOur luxury concierge services are subject to availability. Prices and item availability are subject to change without prior notice. Global shipping is provided through our premium logistics partners (DHL, FedEx) and is subject to local customs regulations.'
                 };
             case 'returns':
                 return {
@@ -42,7 +42,7 @@ export const LegalContentScreen: React.FC<Props> = ({ navigation, route }) => {
                 return {
                     title: 'Legal Information',
                     lastUpdated: 'Updated 2024',
-                    content: 'General legal information regarding Yap Fashion PLC operations and services.'
+                    content: 'General legal information regarding Bantu Creations PLC operations and services.'
                 };
         }
     };
@@ -77,7 +77,7 @@ export const LegalContentScreen: React.FC<Props> = ({ navigation, route }) => {
                             <Text style={styles.contactTitle}>Questions?</Text>
                             <Text style={styles.contactSub}>If you have any questions about our {data.title}, please reach out to our legal department.</Text>
                             <TouchableOpacity style={styles.emailBtn}>
-                                <Text style={styles.emailText}>legal@yapfashion.com</Text>
+                                <Text style={styles.emailText}>legal@bantucreations.com</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

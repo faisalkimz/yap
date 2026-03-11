@@ -41,7 +41,7 @@ export const InvoiceScreen: React.FC<Props> = ({ navigation }) => {
     const handleShare = async () => {
         try {
             await Share.share({
-                message: `Invoice ${INVOICE_DATA.number} from Yap Boutique`,
+                message: `Invoice ${INVOICE_DATA.number} from Bantu Creations`,
             });
         } catch (error) {
             console.error(error);
@@ -66,8 +66,8 @@ export const InvoiceScreen: React.FC<Props> = ({ navigation }) => {
                     {/* Brand Header */}
                     <View style={styles.invoiceHeader}>
                         <View>
-                            <Text style={styles.brandTitle}>YAP</Text>
-                            <Text style={styles.brandSubtitle}>OFFICIAL ARCHIVE</Text>
+                            <Text style={styles.brandTitle}>BANTU CREATIONS</Text>
+                            <Text style={styles.brandSubtitle}>OFFICIAL ATELIER ARCHIVE</Text>
                         </View>
                         <View style={styles.invoiceMeta}>
                             <Text style={styles.metaLabel}>INVOICE NO.</Text>

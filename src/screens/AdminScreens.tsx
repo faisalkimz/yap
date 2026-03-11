@@ -15,6 +15,7 @@ import {
     Switch,
     Modal,
 } from 'react-native';
+import { sanitizeInput } from '../utils/sanitize';
 import {
     ChevronLeft,
     Store,
@@ -130,10 +131,10 @@ const VENDORS = [
 ];
 
 const ADMIN_USERS = [
-    { id: '1', name: 'Super Admin', email: 'admin@yap.com', role: 'Super Admin', lastLogin: 'Today, 10:30 AM', status: 'active' },
-    { id: '2', name: 'Order Manager', email: 'orders@yap.com', role: 'Order Manager', lastLogin: 'Yesterday', status: 'active' },
-    { id: '3', name: 'Product Manager', email: 'products@yap.com', role: 'Product Manager', lastLogin: '2 days ago', status: 'active' },
-    { id: '4', name: 'Support Staff', email: 'support@yap.com', role: 'Support', lastLogin: '3 days ago', status: 'active' },
+    { id: '1', name: 'Super Admin', email: 'admin@bantu.creations', role: 'Super Admin', lastLogin: 'Today, 10:30 AM', status: 'active' },
+    { id: '2', name: 'Order Manager', email: 'orders@bantu.creations', role: 'Order Manager', lastLogin: 'Yesterday', status: 'active' },
+    { id: '3', name: 'Product Manager', email: 'products@bantu.creations', role: 'Product Manager', lastLogin: '2 days ago', status: 'active' },
+    { id: '4', name: 'Support Staff', email: 'support@bantu.creations', role: 'Support', lastLogin: '3 days ago', status: 'active' },
 ];
 
 const ALL_ORDERS = [
@@ -244,7 +245,7 @@ export const AdminDashboardScreen = ({ navigation }: any) => {
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.headerGreeting}>Admin Panel</Text>
-                        <Text style={styles.headerTitle}>YAP Marketplace</Text>
+                        <Text style={styles.headerTitle}>Bantu Creations</Text>
                     </View>
                     <View style={styles.headerRight}>
                         <TouchableOpacity style={styles.headerIcon}>
@@ -629,7 +630,7 @@ export const AdminLoginScreen = ({ navigation }: any) => {
                             <Shield size={40} color={COLORS.white} />
                         </View>
                         <Text style={styles.authTitle}>ADMIN</Text>
-                        <Text style={styles.authSubtitle}>YAP Marketplace</Text>
+                        <Text style={styles.authSubtitle}>Bantu Creations</Text>
                     </View>
 
                     <View style={styles.authForm}>
@@ -639,7 +640,7 @@ export const AdminLoginScreen = ({ navigation }: any) => {
                                 <Mail size={18} color={COLORS.gray} />
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="admin@yap.com"
+                                    placeholder="admin@bantu.com"
                                     placeholderTextColor={COLORS.gray}
                                     value={email}
                                     onChangeText={(t) => setEmail(sanitizeInput(t))}

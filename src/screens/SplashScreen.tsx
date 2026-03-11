@@ -65,7 +65,8 @@ export const SplashScreen: React.FC<Props> = ({ navigation }) => {
         }
       ]}>
         <View style={styles.logoBadge}>
-          <Text style={styles.logoText}>YAP</Text>
+          <Text style={styles.logoText}>BANTU</Text>
+          <Text style={[styles.logoText, { fontSize: 24, letterSpacing: 4 }]}>CREATIONS</Text>
         </View>
         <View style={styles.taglineBox}>
           <View style={styles.line} />

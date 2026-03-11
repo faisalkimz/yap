@@ -54,7 +54,7 @@ export const AboutUsScreen: React.FC<Props> = ({ navigation }) => {
                     <Text style={styles.sectionLabel}>OUR PHILOSOPHY</Text>
                     <Text style={styles.sectionTitle}>The Human Touch in a Digital World</Text>
                     <Text style={styles.bodyText}>
-                        Yap was born from a singular vision: to bridge the gap between architectural precision and the fluidity of human expression. We believe that what you wear is the most intimate form of architecture.
+                        Bantu Creations was born from a singular vision: to bridge the gap between architectural precision and the fluidity of human expression. We believe that what you wear is the most intimate form of architecture.
                     </Text>
                     <Text style={styles.bodyText}>
                         In a world of mass production, we celebrate the archive. Every piece in our collection is curated not just for its aesthetic, but for its endurance, its story, and its ability to transform.
@@ -75,7 +75,7 @@ export const AboutUsScreen: React.FC<Props> = ({ navigation }) => {
                         <ShieldCheck size={24} color={colors.secondary} strokeWidth={1} />
                         <View style={styles.pillarInfo}>
                             <Text style={styles.pillarTitle}>Authenticity Guaranteed</Text>
-                            <Text style={styles.pillarSub}>Every piece in the Yap Archive undergoes a 12-point inspection by our master curators before it reaches your residence.</Text>
+                            <Text style={styles.pillarSub}>Every piece in the Bantu Creations Archive undergoes a 12-point inspection by our master curators before it reaches your residence.</Text>
                         </View>
                     </View>
 

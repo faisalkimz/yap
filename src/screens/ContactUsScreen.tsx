@@ -77,7 +77,7 @@ export const ContactUsScreen: React.FC<Props> = ({ navigation }) => {
                             <Mail size={20} color="#1C1C1E" />
                             <View style={{ marginLeft: 16 }}>
                                 <Text style={styles.channelTitle}>Email</Text>
-                                <Text style={styles.channelValue}>support@yapfashion.com</Text>
+                                <Text style={styles.channelValue}>support@bantucreations.com</Text>
                             </View>
                         </TouchableOpacity>
 

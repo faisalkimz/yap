@@ -38,6 +38,7 @@ import {
 } from 'lucide-react-native';
 import { colors, lightColors, darkColors } from '../theme/colors';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -66,6 +67,8 @@ const SectionLayout = ({ title, navigation, children, footer }: { title: string,
 
 // --- Edit Profile ---
 export const EditProfileScreen = ({ navigation }: any) => {
+    const { user } = useAuth();
+
     return (
         <SectionLayout
             title="Edit Profile"
@@ -79,20 +82,20 @@ export const EditProfileScreen = ({ navigation }: any) => {
             <View style={styles.avatarSection}>
                 <View style={styles.avatarWrapper}>
                     <Image
-                        source={{ uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80' }}
+                        source={{ uri: user?.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80' }}
                         style={styles.avatarMain}
                     />
                     <TouchableOpacity style={styles.cameraBtn}>
                         <Camera size={20} color="#FFFFFF" strokeWidth={2.5} />
                     </TouchableOpacity>
                 </View>
-                <Text style={styles.avatarName}>Faisal Kimz</Text>
-                <Text style={styles.avatarEmail}>faisal@example.com</Text>
+                <Text style={styles.avatarName}>{user?.name || 'Bantu User'}</Text>
+                <Text style={styles.avatarEmail}>{user?.email || 'user@bantu.creations'}</Text>
             </View>
 
             <View style={styles.formSection}>
-                <InputField label="Full Name" icon={User} defaultValue="Faisal Kimz" />
-                <InputField label="Email Address" icon={Mail} defaultValue="faisal@example.com" keyboardType="email-address" />
+                <InputField label="Full Name" icon={User} defaultValue={user?.name || ''} />
+                <InputField label="Email Address" icon={Mail} defaultValue={user?.email || ''} keyboardType="email-address" />
                 <InputField label="Phone Number" icon={Phone} defaultValue="+44 7890 123456" keyboardType="phone-pad" />
                 <InputField label="Location" icon={MapPin} defaultValue="London, UK" />
             </View>
@@ -270,7 +273,7 @@ export const SupportScreen = ({ navigation }: any) => {
                 <Mail size={24} color="#1C1C1E" strokeWidth={2} />
                 <View style={{ marginLeft: 16 }}>
                     <Text style={[styles.supportActionTitle, { color: '#1C1C1E' }]}>Email Support</Text>
-                    <Text style={[styles.supportActionText, { color: '#8E8E93' }]}>support@yapfashion.com</Text>
+                    <Text style={[styles.supportActionText, { color: '#8E8E93' }]}>support@bantucreations.com</Text>
                 </View>
             </TouchableOpacity>
         </SectionLayout>

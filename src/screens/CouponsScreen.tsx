@@ -103,7 +103,7 @@ export const CouponsScreen: React.FC<Props> = ({ navigation }) => {
                 ))}
 
                 <View style={styles.loyaltyBox}>
-                    <Text style={styles.loyaltyTitle}>Yap Loyalty Club</Text>
+                    <Text style={styles.loyaltyTitle}>Bantu Creations Loyalty Club</Text>
                     <Text style={styles.loyaltyText}>You are currently at **Silver Status**. Earn 450 more points for **Gold Access**, unlocking complimentary worldwide shipping and early archive entry.</Text>
                 </View>
 

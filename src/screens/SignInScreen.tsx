@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Alert, TextInput } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import {
     StyleSheet,
     Text,
@@ -22,6 +24,31 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 export const SignInScreen: React.FC<Props> = ({ navigation }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const { login } = useAuth();
+
+    const handleLogin = async () => {
+        if (!email || !password) {
+            Alert.alert('Error', 'Please fill in all fields');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const success = await login(email, password, 'customer');
+            if (success) {
+                navigation.replace('Home');
+            } else {
+                Alert.alert('Error', 'Invalid email or password');
+            }
+        } catch (error) {
+            Alert.alert('Error', 'An error occurred during sign in');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <View style={styles.mainContainer}>
@@ -64,6 +91,8 @@ export const SignInScreen: React.FC<Props> = ({ navigation }) => {
                                             placeholderTextColor="#A0A0A0"
                                             keyboardType="email-address"
                                             autoCapitalize="none"
+                                            value={email}
+                                            onChangeText={setEmail}
                                         />
                                     </View>
                                 </View>
@@ -80,6 +109,8 @@ export const SignInScreen: React.FC<Props> = ({ navigation }) => {
                                             placeholder="••••••••"
                                             placeholderTextColor="#A0A0A0"
                                             secureTextEntry={!showPassword}
+                                            value={password}
+                                            onChangeText={setPassword}
                                         />
                                     </View>
                                     <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
@@ -97,14 +128,15 @@ export const SignInScreen: React.FC<Props> = ({ navigation }) => {
 
                             <TouchableOpacity
                                 style={styles.signInButton}
-                                onPress={() => navigation.replace('Home')}
+                                onPress={handleLogin}
+                                disabled={loading}
                                 activeOpacity={0.9}
                             >
                                 <LinearGradient
                                     colors={['#1C1C1E', '#2C2C2E']}
                                     style={styles.buttonGradient}
                                 >
-                                    <Text style={styles.signInButtonText}>Sign In</Text>
+                                    <Text style={styles.signInButtonText}>{loading ? 'Signing In...' : 'Sign In'}</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
 
@@ -165,8 +197,7 @@ export const SignInScreen: React.FC<Props> = ({ navigation }) => {
     );
 };
 
-// Add TextInput import to avoid error
-import { TextInput } from 'react-native';
+
 
 const styles = StyleSheet.create({
     mainContainer: {

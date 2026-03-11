@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Image, ScrollView, Platform, StatusBar } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
@@ -27,6 +27,7 @@ import {
 } from 'lucide-react-native';
 
 import { colors } from '../theme/colors';
+import { useAuth } from '../context/AuthContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
 
@@ -38,12 +39,14 @@ const DASHBOARD_ITEMS = [
 ];
 
 export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
+    const { user, logout } = useAuth();
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
             <SafeAreaView style={styles.safeArea}>
                 <View style={styles.header}>
-                    <Text style={styles.brandTitle}>YAP</Text>
+                    <Text style={[styles.brandTitle, { fontSize: 20 }]}>BANTU CREATIONS</Text>
                     <TouchableOpacity style={styles.iconCircle} onPress={() => navigation.navigate('Notifications')}>
                         <Bell size={22} color="#1C1C1E" />
                         <View style={styles.notifDot} />
@@ -55,7 +58,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                     <View style={styles.hero}>
                         <View style={styles.avatarWrapper}>
                             <Image
-                                source={{ uri: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80' }}
+                                source={{ uri: user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80' }}
                                 style={styles.avatar}
                             />
                             <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditProfile')}>
@@ -63,12 +66,12 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.heroText}>
-                            <Text style={styles.greeting}>Good Evening,</Text>
-                            <Text style={styles.name}>Faisal Kimz</Text>
+                            <Text style={styles.greeting}>{user ? 'Good Evening,' : 'Welcome to'}</Text>
+                            <Text style={styles.name}>{user ? user.name : 'Bantu Creations'}</Text>
                             <View style={styles.statusRow}>
-                                <Text style={styles.statusText}>Titanium Curator</Text>
+                                <Text style={styles.statusText}>{user ? 'Titanium Curator' : 'Exclusive Access'}</Text>
                                 <View style={styles.statusDivider} />
-                                <Text style={styles.statusPoints}>2.4k Pts</Text>
+                                <Text style={styles.statusPoints}>{user ? '2.4k Pts' : 'Join Now'}</Text>
                             </View>
                         </View>
                     </View>
@@ -161,16 +164,26 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                             <Text style={styles.settingText}>Assistance & FAQ</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.signOutBtn}
-                            onPress={() => navigation.navigate('LogoutConfirmation')}
-                        >
-                            <Text style={styles.signOutText}>Secure Logout</Text>
-                            <LogOut size={16} color={colors.accent} />
-                        </TouchableOpacity>
+                        {user ? (
+                            <TouchableOpacity
+                                style={styles.signOutBtn}
+                                onPress={() => logout()}
+                            >
+                                <Text style={styles.signOutText}>Secure Logout</Text>
+                                <LogOut size={16} color={colors.accent} />
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity
+                                style={styles.signOutBtn}
+                                onPress={() => navigation.navigate('SignIn')}
+                            >
+                                <Text style={[styles.signOutText, { color: colors.primary }]}>Sign In to Account</Text>
+                                <LogOut size={16} color={colors.primary} />
+                            </TouchableOpacity>
+                        )}
                     </View>
 
-                    <Text style={styles.legalNotice}>Handcrafted by Yap PLC. v2.4.1</Text>
+                    <Text style={styles.legalNotice}>Handcrafted by Bantu Creations PLC. v2.4.1</Text>
                 </ScrollView>
             </SafeAreaView>
             <BottomNav />

@@ -44,7 +44,7 @@ export const ReturnsDashboardScreen: React.FC<Props> = ({ navigation }) => {
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
                 <View style={styles.infoBox}>
                     <AlertCircle size={20} color={colors.primary} />
-                    <Text style={styles.infoText}>You have 14 days from delivery to initiate a return for the Yap Archive collection.</Text>
+                    <Text style={styles.infoText}>You have 14 days from delivery to initiate a return for the Bantu Creations Archive collection.</Text>
                 </View>
 
                 <Text style={styles.sectionTitle}>Active Requests</Text>

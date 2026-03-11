@@ -16,6 +16,7 @@ import {
     Modal,
     Pressable,
 } from 'react-native';
+import { sanitizeInput } from '../utils/sanitize';
 import {
     ChevronLeft,
     Store,
@@ -104,7 +105,7 @@ const COLORS = {
 const VENDOR_INFO = {
     storeName: 'Luxe Fashion',
     ownerName: 'John Doe',
-    email: 'vendor@yap.com',
+    email: 'vendor@bantu.creations',
     phone: '+44 7890 123456',
     address: 'London, UK',
     rating: 4.9,
@@ -915,7 +916,7 @@ export const VendorRegisterScreen = ({ navigation }: any) => {
                             <Store size={40} color={COLORS.primary} />
                         </View>
                         <Text style={styles.authTitle}>BECOME A VENDOR</Text>
-                        <Text style={styles.authSubtitle}>Start selling on YAP</Text>
+                        <Text style={styles.authSubtitle}>Start selling on Bantu Creations</Text>
                     </View>
 
                     <View style={styles.authForm}>
